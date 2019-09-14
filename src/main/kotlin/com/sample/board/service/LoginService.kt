@@ -1,19 +1,15 @@
 package com.sample.board.service
 
-import com.sample.board.datasource.TestUserRepositoryImpl
 import com.sample.board.domain.model.LoginUser
 import com.sample.board.domain.model.User
-import org.springframework.beans.factory.annotation.Autowired
+import com.sample.board.service.repository.UserRepository
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 
 @Service
-class LoginService : UserDetailsService {
-
-    @Autowired
-    lateinit var repository: TestUserRepositoryImpl
+class LoginService(val repository: UserRepository) : UserDetailsService {
 
     override fun loadUserByUsername(userId: String?): UserDetails {
 
@@ -23,6 +19,7 @@ class LoginService : UserDetailsService {
 
         val user: User = repository.fetchUserById(userId)
             ?: throw UsernameNotFoundException("ユーザーIDが不正です。")
+
         return LoginUser(user)
     }
 }

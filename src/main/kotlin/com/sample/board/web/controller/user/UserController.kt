@@ -1,9 +1,8 @@
 package com.sample.board.web.controller.user
 
-import com.sample.board.domain.model.LoginUser
+import com.sample.board.service.UserService
+import com.sample.board.service.dto.UserCreateDto
 import com.sample.board.web.form.RegisterUserForm
-import org.springframework.security.core.annotation.AuthenticationPrincipal
-
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
@@ -16,7 +15,7 @@ import javax.validation.Valid
 
 @Controller
 @RequestMapping("user")
-class UserController {
+class UserController(val service: UserService) {
 
     @GetMapping("register")
     fun showUserRegister(model: Model, @ModelAttribute("RegisterUserForm") input: RegisterUserForm): String {
@@ -28,7 +27,6 @@ class UserController {
     fun registerUser(
         model: Model, @ModelAttribute("RegisterUserForm") @Valid input: RegisterUserForm,
         bindingResult: BindingResult,
-        @AuthenticationPrincipal loginUser: LoginUser,
         redirectAttributes: RedirectAttributes
     ): String {
 
@@ -39,6 +37,14 @@ class UserController {
             return "user-register"
         }
 
-        return "redirect:login"
+        // サービスの登録処理の呼び出し
+        val dto = UserCreateDto(
+            input.userId ?: throw Exception(), // バリデーションチェックしてるのでnullはないはず
+            input.password ?: throw Exception(),
+            input.userName ?: throw Exception()
+        )
+        service.createUser(dto)
+
+        return "redirect:../login"
     }
 }

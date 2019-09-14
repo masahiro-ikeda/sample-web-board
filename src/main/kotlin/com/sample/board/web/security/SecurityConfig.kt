@@ -1,4 +1,4 @@
-package com.sample.board.web.security;
+package com.sample.board.web.security
 
 import com.sample.board.service.LoginService
 import org.springframework.beans.factory.annotation.Autowired
@@ -8,7 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
-import org.springframework.security.crypto.password.NoOpPasswordEncoder
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 
 
@@ -27,7 +27,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
         // セキュリティ設定を無視するリクエスト設定
         web.ignoring()
             // 静的リソースに対するアクセスはセキュリティ設定を無視する
-            .antMatchers("/css/**", "/images/**", "/js/**", "/plugins/**", "/unify/**");
+            .antMatchers("/css/**", "/images/**", "/js/**", "/plugins/**", "/unify/**")
     }
 
     override fun configure(http: HttpSecurity) {
@@ -35,9 +35,9 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
         // 認可の設定
         http.authorizeRequests()
             // ログイン、セキュリティ認証、エラー画面以外は認証が必要
-            .antMatchers("/login/**", "/security/**", "/api/**", "/error/**","/user/**").permitAll()
+            .antMatchers("/login/**", "/security/**", "/api/**", "/error/**", "/user/**").permitAll()
             //.mvcMatchers("/maintenance/**").hasAuthority("ADMIN")
-			//.antMatchers("/maintenance/").hasRole("ADMIN")	// ADMIN権限がないとアクセスできないURL
+            //.antMatchers("/maintenance/").hasRole("ADMIN")	// ADMIN権限がないとアクセスできないURL
             .anyRequest().authenticated()        // /js、/css以外へのアクセスに対しては認証を要求
             .and()
             // ログイン設定
@@ -48,19 +48,16 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
             .passwordParameter("password")            // パスワードのリクエストパラメータ名
             .defaultSuccessUrl("/board", true)        // 認証成功時の遷移先URL
             .failureUrl("/error/403")    // 認証失敗時の遷移先URL
-            .permitAll();
+            .permitAll()
 
-//		// ログアウト設定
+        // ログアウト設定
         http.logout()
             // 認証URL
-            .logoutRequestMatcher(AntPathRequestMatcher("/security/logout"));
-
+            .logoutRequestMatcher(AntPathRequestMatcher("/security/logout"))
     }
 
     override fun configure(auth: AuthenticationManagerBuilder) {
-
         auth.userDetailsService<LoginService>(loginService)
-            //.passwordEncoder(BCryptPasswordEncoder())
-            .passwordEncoder(NoOpPasswordEncoder.getInstance())
+            .passwordEncoder(BCryptPasswordEncoder())
     }
 }
