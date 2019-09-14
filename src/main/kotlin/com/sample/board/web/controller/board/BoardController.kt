@@ -1,4 +1,4 @@
-package com.sample.board.web.register
+package com.sample.board.web.controller.board
 
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -6,11 +6,11 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 
 @Controller
-@RequestMapping("register")
-class RegisterController {
+@RequestMapping("board")
+class BoardController {
 
     @GetMapping
-    fun showLogin(model: Model): String {
-        return "register"
+    fun showBoard(model: Model): String {
+        return "board"
     }
 }

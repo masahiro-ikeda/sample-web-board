@@ -5,7 +5,7 @@
     <title>ログイン</title>
 </head>
 <body>
-<form action="/login" method="post">
+<form th:action="@{/security/login}" method="post">
     <input type="text" name="userId" placeholder="ID" length="20"/>
     <input type="text" name="password" placeholder="PASSWORD" length="20"/>
     <input type="submit" value="ログイン"/>
