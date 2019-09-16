@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>ログイン</title>
 </head>
 <body>
 <form th:action="@{/security/login}" method="post">
-    <input type="text" name="userId" placeholder="ID" length="20"/>
-    <input type="text" name="password" placeholder="PASSWORD" length="20"/>
+    <input type="text" name="userId" placeholder="ID" maxlength="25"/>
+    <input type="text" name="password" placeholder="PASSWORD" maxlength="25"/>
     <input type="submit" value="ログイン"/>
 </form>
 </body>
