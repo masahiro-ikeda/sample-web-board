@@ -1,19 +1,19 @@
-package com.sample.board.service
+package com.sample.board.domain.service
 
 import com.sample.board.domain.model.LoginUser
 import com.sample.board.domain.model.User
-import com.sample.board.service.repository.UserRepository
+import com.sample.board.domain.service.repository.IUserRepository
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 
 @Service
-class LoginService(val repository: UserRepository) : UserDetailsService {
+class LoginService(val repository: IUserRepository) : UserDetailsService {
 
     override fun loadUserByUsername(userId: String?): UserDetails {
 
-        if (userId == null || "" == userId) {
+        if (userId.isNullOrBlank()) {
             throw UsernameNotFoundException("ユーザーIDが未入力です")
         }
 

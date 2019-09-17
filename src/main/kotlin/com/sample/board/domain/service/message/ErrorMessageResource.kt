@@ -1,4 +1,4 @@
-package com.sample.board.service.message
+package com.sample.board.domain.service.message
 
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.PropertySource
@@ -7,7 +7,7 @@ import java.text.MessageFormat
 
 @Configuration
 @PropertySource(
-    "classpath:/config/ErrorMessage.properties"
+    "classpath:/message/ErrorMessage.properties"
 )
 class ErrorMessageResource(val env: Environment) {
 

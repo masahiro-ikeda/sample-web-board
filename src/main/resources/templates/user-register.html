@@ -6,9 +6,27 @@
 </head>
 <body>
 <form th:object="${RegisterUserForm}" th:action="@{/user/register}" method="post">
-    <input type="text" th:field="*{userId}" placeholder="ID" maxlength="25"/>
-    <input type="password" th:field="*{password}" placeholder="PASSWORD" maxlength="25"/>
-    <input type="text" th:field="*{userName}" placeholder="NAME" maxlength="25"/>
+    <label>ユーザID</label><br>
+    <input type="text" th:field="*{userId}" placeholder="半角英数字(25文字)" maxlength="25"/>
+    <span th:each="error: *{errors}">
+        <label th:if="${error.item} eq 'userId'" th:text="${error.message}" class="errorMsg">error!!</label>
+    </span><br>
+    <br>
+
+    <label>パスワード</label><br>
+    <input type="password" th:field="*{password}" placeholder="半角英数字(25文字)" maxlength="25"/>
+    <span th:each="error: *{errors}">
+        <label th:if="${error.item} eq 'password'" th:text="${error.message}" class="errorMsg">error!!</label>
+    </span><br>
+    <br>
+
+    <label>ユーザ名</label><br>
+    <input type="text" th:field="*{userName}" placeholder="25文字" maxlength="25"/>
+    <span th:each="error: *{errors}">
+        <label th:if="${error.item} eq 'userName'" th:text="${error.message}" class="errorMsg">error!!</label>
+    </span><br>
+    <br>
+
     <input type="submit" value="登録"/>
 </form>
 </body>

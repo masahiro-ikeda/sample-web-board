@@ -1,4 +1,4 @@
-package com.sample.board.service.dto
+package com.sample.board.domain.service.dto
 
 data class UserCreateDto(
     val userId: String?,

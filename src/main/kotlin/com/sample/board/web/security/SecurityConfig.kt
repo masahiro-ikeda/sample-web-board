@@ -1,6 +1,6 @@
 package com.sample.board.web.security
 
-import com.sample.board.service.LoginService
+import com.sample.board.domain.service.LoginService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
