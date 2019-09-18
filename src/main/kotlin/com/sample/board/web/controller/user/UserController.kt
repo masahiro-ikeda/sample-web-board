@@ -1,6 +1,6 @@
 package com.sample.board.web.controller.user
 
-import com.sample.board.domain.service.UserService
+import com.sample.board.domain.service.IUserService
 import com.sample.board.domain.service.dto.UserCreateDto
 import com.sample.board.domain.service.exception.CreateUserException
 import com.sample.board.web.form.CreateUserForm
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 @Controller
 @RequestMapping("user")
 class UserController(
-    val service: UserService,
+    val service: IUserService,
     val validator: SmartValidator
 ) {
 

@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service
 class UserService(
     private val errorMessage: MessageResources,
     private val repository: IUserRepository
-) {
+) : IUserService {
 
-    fun createUser(dto: UserCreateDto) {
+    override fun createUser(dto: UserCreateDto) {
 
         // ユーザーモデルの生成
         val user = User(
@@ -30,7 +30,8 @@ class UserService(
 
         // IDの重複チェック
         if (repository.fetchUserById(user.id) != null) {
-            throw CreateUserException(errorMessage.get("error.application.duplicating", "ユーザーID"))
+            val message = errorMessage.get("error.application.duplicating", "ユーザーID")
+            throw CreateUserException(message)
         }
 
         repository.createUser(user)
