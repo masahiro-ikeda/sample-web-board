@@ -1,11 +1,11 @@
 package com.sample.board.domain.service.validation
 
 import com.sample.board.domain.service.exception.ValidationErrorException
-import com.sample.board.domain.service.message.ErrorMessageResource
+import com.sample.board.domain.service.message.MessageResources
 
 class Validator(
     private val targetValue: String?,
-    private val errorMessage: ErrorMessageResource
+    private val errorMessage: MessageResources
 ) {
 
     // nullチェック

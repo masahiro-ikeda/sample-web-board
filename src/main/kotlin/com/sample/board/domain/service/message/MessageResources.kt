@@ -7,9 +7,9 @@ import java.text.MessageFormat
 
 @Configuration
 @PropertySource(
-    "classpath:/message/ErrorMessage.properties"
+    "classpath:/MessageResources.properties"
 )
-class ErrorMessageResource(val env: Environment) {
+class MessageResources(val env: Environment) {
 
     companion object {
         const val NO_MESSAGE = "No Message."
@@ -32,6 +32,6 @@ class ErrorMessageResource(val env: Environment) {
      * @return プロパティ値
      */
     fun get(key: String, vararg args: Any): String {
-        return MessageFormat.format(env.getProperty(key), *args) ?: NO_MESSAGE
+        return MessageFormat.format(env.getProperty(key)!!, *args) ?: NO_MESSAGE
     }
 }

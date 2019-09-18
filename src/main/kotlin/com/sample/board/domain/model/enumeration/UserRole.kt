@@ -1,5 +1,5 @@
 package com.sample.board.domain.model.enumeration
 
-enum class UserRole() {
+enum class UserRole {
     USER, ADMIN
 }
