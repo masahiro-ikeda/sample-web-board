@@ -34,6 +34,6 @@ class UserService(
             throw CreateUserException(message)
         }
 
-        repository.createUser(user)
+        repository.create(user)
     }
 }

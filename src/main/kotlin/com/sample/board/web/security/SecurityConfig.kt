@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 
 
@@ -17,10 +18,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher
  */
 @Configuration
 @EnableWebSecurity
-class SecurityConfig : WebSecurityConfigurerAdapter() {
-
-    @Autowired
-    lateinit private var loginService: LoginService
+class SecurityConfig(
+    private val loginService: LoginService
+) : WebSecurityConfigurerAdapter() {
 
     override fun configure(web: WebSecurity) {
 
@@ -49,6 +49,8 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
             .defaultSuccessUrl("/board", true)        // 認証成功時の遷移先URL
             .failureUrl("/error/403")    // 認証失敗時の遷移先URL
             .permitAll()
+            .and()
+            .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
 
         // ログアウト設定
         http.logout()

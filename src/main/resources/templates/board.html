@@ -1,10 +1,39 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>掲示板</title>
 </head>
 <body>
-<h1>掲示板</h1>
+<input type="text" maxlength="100" id="content"/><br>
+<input type="button" value="登録" id="btn"/>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+<script type="text/javascript">
+  let button = $('#btn');
+
+  btn.onclick = function(){
+    alert("起動！");
+    $.ajax({
+      url  :'poster/post',
+      type :'POST',
+      data :{
+        '_csrf'   : $.cookie('XSRF-TOKEN'),
+        'content' : $('#content').val()
+      }
+    })
+    // リクエスト成功時
+    .done((data) => {
+      alert("成功！");
+    })
+    // リクエスト失敗時
+    .fail( (data) => {
+      alert("通信エラーが発生したため再読込して下さい。");
+    })
+  }
+
+</script>
+
 </body>
 </html>

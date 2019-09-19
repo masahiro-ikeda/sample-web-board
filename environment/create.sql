@@ -14,12 +14,13 @@ CREATE DATABASE develop;
 
   # 掲示板
   CREATE TABLE develop.messages(
-      id INT     AUTO_INCREMENT NOT NULL PRIMARY KEY,
-      post_no    INT(5) NOT NULL,
-      reply_no   INT(5) NOT NULL,
-      user_id    VARCHAR(100) NOT NULL,
-      content    VARCHAR(400) NOT NULL,
-      is_deleted INT(1) NOT NULL,
-      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+      id           INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+      message_type VARCHAR(10) NOT NULL,
+      post_no      INT(5) NOT NULL,
+      reply_no     INT(5) NOT NULL,
+      user_id      VARCHAR(100) NOT NULL,
+      content      VARCHAR(400) NOT NULL,
+      is_deleted   INT(1) NOT NULL,
+      created_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
   );

@@ -12,7 +12,7 @@ class UserRepositoryImpl(private val mapper: UserMapper): IUserRepository {
         return mapper.selectById(userId)
     }
 
-    override fun createUser(user: User) {
+    override fun create(user: User) {
         mapper.insert(user)
     }
 }
