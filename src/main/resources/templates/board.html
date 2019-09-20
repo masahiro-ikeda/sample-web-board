@@ -1,22 +1,20 @@
 <!DOCTYPE html>
-<html lang="ja" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="ja" xmlns:th="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
     <title>掲示板</title>
 </head>
-<body>
-<input type="text" maxlength="100" id="content"/><br>
+<textarea maxlength="100" id="content"></textarea>
 <input type="button" value="登録" id="btn"/>
 
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 <script type="text/javascript">
   let button = $('#btn');
 
   btn.onclick = function(){
-    alert("起動！");
     $.ajax({
-      url  :'poster/post',
+      url  :'poster/message',
       type :'POST',
       data :{
         '_csrf'   : $.cookie('XSRF-TOKEN'),
