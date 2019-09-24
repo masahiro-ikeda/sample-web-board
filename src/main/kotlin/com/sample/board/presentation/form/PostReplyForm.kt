@@ -14,5 +14,5 @@ class PostReplyForm(
 
     @field:NotEmpty(message = "{error.validation.null}")
     @field:Size(max = 100, message = "{error.validation.sizeOver}")
-    var content: String?
+    var comment: String?
 )

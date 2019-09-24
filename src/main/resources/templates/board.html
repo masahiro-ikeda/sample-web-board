@@ -7,8 +7,10 @@
     <title>掲示板</title>
 </head>
 <h1>DDDで開発してみた掲示板</h1>
-<textarea maxlength="100" id="content" cols="40" rows="5"></textarea><br>
-<input type="button" value="登録" id="btn"/><br>
+<form id="message">
+    <textarea name="comment" maxlength="100" cols="40" rows="5"></textarea><br>
+    <input type="button" id="postMessageButton" value="登録"/><br>
+</form>
 <hr>
 
 <div id="messagesArea"></div>
@@ -35,19 +37,18 @@
     })
   }
 
-  let button = $('#btn');
-  btn.onclick = function(){
+  postMessageButton.onclick = function(){
     $.ajax({
       url  :'poster/message',
       type :'POST',
       data :{
         '_csrf'   : $.cookie('XSRF-TOKEN'),
-        'content' : $('#content').val()
+        'comment' : $('#message [name=comment]').val()
       }
     })
     // リクエスト成功時
     .done((data) => {
-      $('#content').val(null)
+      $('#message [name=comment]').val(null);
       loadMessages();
     })
     // リクエスト失敗時
@@ -56,6 +57,25 @@
     })
   }
 
+  function postReply(targetFrom){
+    $.ajax({
+      url  :'poster/reply',
+      type :'POST',
+      data :{
+        '_csrf'   : $.cookie('XSRF-TOKEN'),
+        'postNo'  : $('#' + targetFrom + ' [name=postNo]').val(),
+        'comment' : $('#' + targetFrom + ' [name=comment]').val()
+      }
+    })
+    // リクエスト成功時
+    .done((data) => {
+      loadMessages();
+    })
+    // リクエスト失敗時
+    .fail( (data) => {
+      alert("通信エラーが発生したため再読込して下さい。");
+    })
+  }
 </script>
 
 </body>

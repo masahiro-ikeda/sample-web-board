@@ -11,7 +11,7 @@ class MessageRepositoryImpl(
 ) : IMessageRepository {
 
     override fun store(message: Message) {
-        if (messageMapper.selectById(message.id) == null) {
+        if (messageMapper.selectById(message.id).isNullOrEmpty()) {
             messageMapper.insert(message)
         }
 

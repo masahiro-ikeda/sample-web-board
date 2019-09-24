@@ -36,7 +36,7 @@ class PostController(
 
         val dto = PostMessageDto(
             loginUser.username,
-            input.content!!
+            input.comment!!
         )
         service.postMessage(dto)
         return "success"
@@ -57,7 +57,7 @@ class PostController(
         val dto = PostReplyDto(
             input.postNo!!.toInt(),
             userDetails.username,
-            input.content!!
+            input.comment!!
         )
         service.postReply(dto)
         return "success"
