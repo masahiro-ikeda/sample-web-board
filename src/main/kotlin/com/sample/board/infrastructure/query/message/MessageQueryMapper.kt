@@ -1,6 +1,6 @@
-package com.sample.board.infrastructure.message
+package com.sample.board.infrastructure.domain.message
 
-import com.sample.board.application.dto.DisplayMessageDto
+import com.sample.board.query.dto.MessageDto
 import com.sample.board.domain.message.Message
 import org.apache.ibatis.annotations.Delete
 import org.apache.ibatis.annotations.Insert
@@ -8,47 +8,40 @@ import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Select
 
 @Mapper
-interface MessageMapper {
+interface MessageQueryMapper {
 
-    @Insert(
+    @Select(
         """
-        INSERT INTO messages (
+        SELECT
           id,
           message_type,
           post_no,
           reply_no,
           user_id,
-          content,
-          is_deleted,
-          created_at,
-          updated_at
-        ) VALUES (
-          #{id},
-          #{messageType},
-          #{postNo},
-          #{replyNo},
-          #{userId},
-          #{content},
-          #{isDeleted},
-          NOW(),
-          NOW()
-        )
+          comment,
+          is_deleted
+        FROM
+          messages
+        WHERE
+          id = #{id} AND
+          is_deleted = 0
         """
     )
-    fun insert(message: Message)
+    fun selectById(id: String): Message?
 
     @Select(
         """
         SELECT
           msg.id,
-          msg.message_type,
+          msg.type as message_type,
           msg.post_no,
           msg.reply_no,
           msg.user_id,
           usr.name as user_name,
-          msg.content,
+          msg.comment,
           msg.is_deleted,
-          msg.created_at as post_time
+          msg.created_at,
+          msg.updated_at
         FROM
           messages msg
         INNER JOIN users usr
@@ -57,17 +50,7 @@ interface MessageMapper {
           msg.post_no, msg.reply_no
         """
     )
-    fun select(): List<DisplayMessageDto>
-
-    @Delete(
-        """
-        DELETE FROM
-          messages
-        WHERE
-          id = #{id}
-        """
-    )
-    fun delete(id: Int)
+    fun selectAll(): List<MessageDto>?
 
     @Select(
         """

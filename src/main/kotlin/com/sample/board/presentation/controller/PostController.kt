@@ -4,9 +4,10 @@ import com.google.gson.Gson
 import com.sample.board.application.IMessageService
 import com.sample.board.application.dto.PostMessageDto
 import com.sample.board.application.dto.PostReplyDto
-import com.sample.board.domain.LoginUser
+import com.sample.board.domain.user.LoginUser
 import com.sample.board.presentation.form.PostMessageForm
 import com.sample.board.presentation.form.PostReplyForm
+import com.sample.board.presentation.presenter.PostPresenter
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.validation.BindingResult
 import org.springframework.validation.SmartValidator
@@ -18,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class PostController(
     val service: IMessageService,
-    val validator: SmartValidator
+    val validator: SmartValidator,
+    val presenter: PostPresenter
 ) {
     @PostMapping("poster/message")
     fun createPostMessage(
@@ -61,11 +63,11 @@ class PostController(
         return "success"
     }
 
-    @GetMapping("post")
+    @GetMapping("messages")
     fun readMessages(
         @AuthenticationPrincipal userDetails: LoginUser
     ): String {
-        val messages = service.displayBoard()
-        return Gson().toJson(messages)
+        val messages = service.fetchMessages()
+        return presenter.formatToHtml(messages)
     }
 }

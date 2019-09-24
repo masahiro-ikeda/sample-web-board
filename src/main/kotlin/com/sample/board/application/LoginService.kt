@@ -1,6 +1,6 @@
 package com.sample.board.application
 
-import com.sample.board.domain.LoginUser
+import com.sample.board.domain.user.LoginUser
 import com.sample.board.domain.user.User
 import com.sample.board.domain.user.IUserRepository
 import org.springframework.security.core.userdetails.UserDetails

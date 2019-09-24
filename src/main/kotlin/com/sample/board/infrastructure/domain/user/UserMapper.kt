@@ -1,4 +1,4 @@
-package com.sample.board.infrastructure.user
+package com.sample.board.infrastructure.domain.user
 
 import com.sample.board.domain.user.User
 import org.apache.ibatis.annotations.Insert

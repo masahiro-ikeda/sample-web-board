@@ -6,12 +6,36 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
     <title>掲示板</title>
 </head>
-<textarea maxlength="100" id="content"></textarea>
-<input type="button" value="登録" id="btn"/>
+<h1>DDDで開発してみた掲示板</h1>
+<textarea maxlength="100" id="content" cols="40" rows="5"></textarea><br>
+<input type="button" value="登録" id="btn"/><br>
+<hr>
+
+<div id="messagesArea"></div>
 
 <script type="text/javascript">
-  let button = $('#btn');
 
+  window.onload = loadMessages();
+
+  function loadMessages(){
+  $.ajax({
+      url  :'messages',
+      type :'GET',
+      data :{
+        '_csrf': $.cookie('XSRF-TOKEN')
+      }
+    })
+    // リクエスト成功時
+    .done((data) => {
+      $('#messagesArea').html(data);
+    })
+    // リクエスト失敗時
+    .fail( (data) => {
+      alert("通信エラーが発生したため再読込して下さい。");
+    })
+  }
+
+  let button = $('#btn');
   btn.onclick = function(){
     $.ajax({
       url  :'poster/message',
@@ -23,7 +47,8 @@
     })
     // リクエスト成功時
     .done((data) => {
-      alert("成功！");
+      $('#content').val(null)
+      loadMessages();
     })
     // リクエスト失敗時
     .fail( (data) => {

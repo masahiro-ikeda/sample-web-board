@@ -1,4 +1,4 @@
-package com.sample.board.domain
+package com.sample.board.domain.user
 
 import com.sample.board.domain.user.User
 import org.springframework.security.core.GrantedAuthority
