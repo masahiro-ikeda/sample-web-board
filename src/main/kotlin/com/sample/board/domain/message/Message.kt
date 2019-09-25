@@ -1,17 +1,16 @@
 package com.sample.board.domain.message
 
-import com.sample.board.domain.user.LoginUser
 import kotlin.streams.toList
 
-class Message {
+open class Message {
     val id: String
     val messageType: MessageType
     val postNo: Int
     val replyNo: Int
     val userId: String
     val comment: String
-    var isDeleted: Int
-    var goodList: MutableList<Good>
+    private var isDeleted: Int
+    private var goodList: MutableList<Good>
 
     constructor(
         id: String,
@@ -39,7 +38,7 @@ class Message {
 
         // 同一ユーザが2回いいねしてないかチェック
         if (goodList.stream()
-                .filter({ this.userId.equals(it.userId) })
+                .filter({ good.userId.equals(it.userId) })
                 .toList()
                 .isNotEmpty()
         )
@@ -48,18 +47,42 @@ class Message {
         goodList.add(good)
     }
 
+    fun removeGood(targetUserId: String) {
+
+        // いいねが1件もないときはエラー
+        if (goodList.size == 0) throw IllegalArgumentException()
+
+        // いいねの削除フラグを立てる
+        goodList.stream().filter { targetUserId.equals(it.userId) }.forEach {
+            it.delete()
+        }
+    }
+
+    fun getGoodList(): List<Good> {
+        return goodList
+    }
+
     fun getNumberOfGood(): Int {
         return goodList.count()
     }
 
-    fun isAlreadyGood(loginUser: LoginUser): Boolean {
+    fun isAlreadyGood(userId: String): Boolean {
         return goodList.stream()
-            .filter({ loginUser.username.equals(it.userId) })
+            .filter({ userId.equals(it.userId) })
             .toList()
             .isEmpty()
     }
 
     fun isReply(): Boolean {
         return this.messageType.equals(MessageType.REPLY)
+    }
+
+    fun delete() {
+        this.isDeleted = 1
+        goodList.forEach { it.delete() }
+    }
+
+    fun isDeleted(): Boolean {
+        return this.isDeleted == 1
     }
 }

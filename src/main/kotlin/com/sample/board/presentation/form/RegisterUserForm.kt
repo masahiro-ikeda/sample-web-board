@@ -32,7 +32,7 @@ class RegisterUserForm(
 
     @field:NotEmpty(message = "{error.validation.null}", groups = [INullCheck::class])
     @field:Pattern(
-        regexp = "[USER|ADMIN]",
+        regexp = "[USER|ADMIN]*",
         message = "{error.validation.illegalPattern}",
         groups = [IFormatCheck::class]
     )

@@ -41,7 +41,7 @@ interface GoodMapper {
         FROM
           goods
         WHERE
-          id = #{id} AND
+          message_id = #{id} AND
           is_deleted = 0
         """
     )
@@ -52,8 +52,8 @@ interface GoodMapper {
         UPDATE 
           goods
         SET
-          is_delete = 1,
-          updatedAt = NOW()
+          is_deleted = 1,
+          updated_at = NOW()
         WHERE
           id = #{id}
         """

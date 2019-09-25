@@ -1,6 +1,5 @@
 package com.sample.board.application
 
-import com.sample.board.query.dto.MessageDto
 import com.sample.board.application.dto.PostMessageDto
 import com.sample.board.application.dto.PostReplyDto
 import com.sample.board.domain.message.*
@@ -59,19 +58,21 @@ class MessageService(
         val allGood = goodQuery.fetchAllGood() ?: listOf()
 
         allMessage.forEach { dto ->
-            val id = dto.id
-            val goods = allGood.stream().filter{good -> id.equals(good.messageId)}.collect(Collectors.toList())
-            val message = Message(
+            val goods = allGood.stream().filter { good -> dto.id.equals(good.messageId) }.collect(Collectors.toList())
+            val message = MessageForDisplay(
                 dto.id,
                 dto.type.name,
                 dto.postNo,
                 dto.replyNo,
                 dto.userId,
+                dto.userName,
                 dto.comment,
                 dto.isDeleted,
-                goods
+                goods,
+                dto.createdAt,
+                dto.updatedAt
             )
-            messageForDisplayList.add(MessageForDisplay(message, dto.userName, dto.createdAt, dto.updatedAt))
+            messageForDisplayList.add(message)
         }
 
         return messageForDisplayList

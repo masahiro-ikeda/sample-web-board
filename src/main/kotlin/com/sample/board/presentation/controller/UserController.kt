@@ -32,7 +32,7 @@ class UserController(
         model: Model, @ModelAttribute(REGISTER_USER_FORM) input: RegisterUserForm
     ): String {
         model.addAttribute(REGISTER_USER_FORM, input)
-        return "create-user"
+        return "register-user"
     }
 
     @PostMapping("register")

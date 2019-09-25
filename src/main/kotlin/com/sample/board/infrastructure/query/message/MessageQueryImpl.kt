@@ -1,6 +1,5 @@
-package com.sample.board.infrastructure.domain.message
+package com.sample.board.infrastructure.query.message
 
-import com.sample.board.domain.message.Message
 import com.sample.board.query.IMessageQuery
 import com.sample.board.query.dto.MessageDto
 import org.springframework.stereotype.Component
@@ -12,7 +11,7 @@ class MessageQueryImpl(private val mapper: MessageQueryMapper) : IMessageQuery {
         return mapper.selectAll()
     }
 
-    override fun fetchById(id: String): Message? {
+    override fun fetchById(id: String): MessageDto? {
         return mapper.selectById(id)
     }
 

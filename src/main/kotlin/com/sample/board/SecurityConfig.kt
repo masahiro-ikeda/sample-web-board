@@ -11,7 +11,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 
-
 /**
  * Spring Security設定
  */
@@ -34,7 +33,7 @@ class SecurityConfig(
         // 認可の設定
         http.authorizeRequests()
             // ログイン、セキュリティ認証、エラー画面以外は認証が必要
-            .antMatchers("/login/**", "/security/**", "/api/**", "/error/**", "/user/**").permitAll()
+            .antMatchers("/login/**", "/security/**", "/error/**", "/user/**").permitAll()
             //.mvcMatchers("/maintenance/**").hasAuthority("ADMIN")
             //.antMatchers("/maintenance/").hasRole("ADMIN")	// ADMIN権限がないとアクセスできないURL
             .anyRequest().authenticated()        // /js、/css以外へのアクセスに対しては認証を要求

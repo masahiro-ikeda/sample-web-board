@@ -6,11 +6,13 @@
 </head>
 <body>
 <form th:action="@{/security/login}" method="post">
-    <input type="text" name="userId" placeholder="ID" maxlength="25"/>
-    <input type="text" name="password" placeholder="PASSWORD" maxlength="25"/>
+    <input type="text" name="userId" placeholder="ID" maxlength="25" required/><br>
+    <br>
+    <input type="text" name="password" placeholder="PASSWORD" maxlength="25" required/><br>
+    <br>
     <input type="submit" value="ログイン"/>
 </form>
 <br>
-<a href="user/register">新規登録</a>
+<a href="user/register">ユーザの新規登録はこちら</a>
 </body>
 </html>

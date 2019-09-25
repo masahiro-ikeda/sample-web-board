@@ -2,25 +2,28 @@ package com.sample.board.presentation.presenter
 
 import com.sample.board.domain.message.MessageForDisplay
 import com.sample.board.domain.message.MessageType
+import com.sample.board.domain.user.LoginUser
 import org.springframework.stereotype.Component
 
 @Component
 class PostPresenter() {
 
-    fun formatToHtml(messages: List<MessageForDisplay>): String {
+    fun formatToHtml(messages: List<MessageForDisplay>, loginUser: LoginUser): String {
         val builder = StringBuilder()
 
         messages.stream().filter {
-            it.body.messageType == MessageType.MESSAGE
+            it.messageType == MessageType.MESSAGE
         }.forEach { message ->
             // メッセージを描画
             builder.append(formatMessage(message))
+            builder.append(setGoodForm(message, loginUser))
 
             // 返信を描画
             messages.stream().filter {
-                it.body.isReply() && it.body.postNo.equals(message.body.postNo)
+                it.isReply() && it.postNo.equals(message.postNo)
             }.forEach { reply ->
                 builder.append(formatReply(reply))
+                builder.append(setGoodForm(reply, loginUser))
             }
 
             // 返信欄を描画
@@ -31,35 +34,41 @@ class PostPresenter() {
 
     private fun formatMessage(target: MessageForDisplay): String {
         val builder = StringBuilder()
-        val message = target.body
-        builder.append("<p class=\"message\">投稿No: ${message.postNo} / 投稿者: ${target.userName} / 投稿時間: ${target.createdAt}</p><br>")
+        builder.append("<p class=\"message\">投稿No: ${target.postNo} / 投稿者: ${target.userName} / 投稿時間: ${target.createdAt}</p><br>")
         builder.append("<br>")
-        builder.append("<p>${message.comment}</p><br>")
+        builder.append("<p>${target.comment}</p><br>")
         builder.append("<br>")
-        builder.append("<hr>")
         return builder.toString()
     }
 
     private fun formatReply(target: MessageForDisplay): String {
         val builder = StringBuilder()
-        val reply = target.body
-        builder.append("<p class=\"reply\">返信No: ${reply.replyNo} / 投稿者: ${target.userName} / 投稿時間: ${target.createdAt}</p><br>")
+        builder.append("<p class=\"reply\">返信No: ${target.replyNo} / 投稿者: ${target.userName} / 投稿時間: ${target.createdAt}</p><br>")
         builder.append("<br>")
-        builder.append("<p>${reply.comment}</p><br>")
+        builder.append("<p>${target.comment}</p><br>")
         builder.append("<br>")
+        return builder.toString()
+    }
+
+    private fun setGoodForm(target: MessageForDisplay, loginUser: LoginUser): String {
+        val builder = StringBuilder()
+        builder.append("<form id=\"goodTo${target.id}\">")
+        builder.append("<input type=\"hidden\" name=\"id\" value=\"${target.id}\">")
+        builder.append("<input type=\"hidden\" name=\"goodStatus\" value=\"${if (target.isAlreadyGood(loginUser.username)) "ENABLE" else "DISABLE"}\">")
+        builder.append("<input type=\"button\" value=\"${target.getNumberOfGood()} いいね\" onclick=\"postGood('goodTo${target.id}')\"/>")
+        builder.append("</form>")
         builder.append("<hr>")
         return builder.toString()
     }
 
     private fun formatReplyForm(target: MessageForDisplay): String {
         val builder = StringBuilder()
-        val message = target.body
-
-        builder.append("<form id=\"replyTo${message.postNo}\">")
-        builder.append("<input type=\"hidden\" name=\"postNo\" value=\"${message.postNo}\">")
+        builder.append("<form id=\"replyTo${target.postNo}\">")
+        builder.append("<input type=\"hidden\" name=\"postNo\" value=\"${target.postNo}\">")
         builder.append("<textarea name=\"comment\" maxlength=\"100\" cols=\"40\" rows=\"2\"></textarea><br>")
-        builder.append("<input type=\"button\" value=\"返信\" onclick=\"postReply('replyTo${message.postNo}')\"/><br>")
+        builder.append("<input type=\"button\" value=\"返信\" onclick=\"postReply('replyTo${target.postNo}')\"/><br>")
         builder.append("</form>")
+        builder.append("<hr>")
         return builder.toString()
     }
 }

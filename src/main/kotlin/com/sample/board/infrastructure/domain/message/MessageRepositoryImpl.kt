@@ -11,12 +11,18 @@ class MessageRepositoryImpl(
 ) : IMessageRepository {
 
     override fun store(message: Message) {
+
+        // DBにない場合は新規作成
         if (messageMapper.selectById(message.id).isNullOrEmpty()) {
             messageMapper.insert(message)
         }
+        // 削除
+        if (message.isDeleted()) {
+            messageMapper.delete(message.id)
+        }
 
         val savedList = goodMapper.selectByMessageId(message.id)
-        val newerList = message.goodList
+        val newerList = message.getGoodList()
 
         // いいねの追加を反映
         newerList.stream().filter { newer ->
@@ -26,13 +32,10 @@ class MessageRepositoryImpl(
                 goodMapper.insert(it)
             }
 
-        // いいねの削除を反映
-        savedList.stream().filter { saved ->
-            !newerList.stream().anyMatch { newer -> saved.id.equals(newer.id) }
+        // いいねの削除
+        newerList.forEach {
+            if (it.isDeleted()) goodMapper.delete(it.id)
         }
-            .forEach {
-                goodMapper.delete(it.id)
-            }
     }
 
     override fun remove(message: Message) {

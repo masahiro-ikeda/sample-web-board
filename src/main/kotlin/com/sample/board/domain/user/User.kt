@@ -2,7 +2,7 @@ package com.sample.board.domain.user
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
-class User{
+class User {
     val id: String
     val password: String
     val name: String

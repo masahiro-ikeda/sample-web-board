@@ -4,79 +4,20 @@
     <meta charset="UTF-8">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <script th:src="@{/js/board.js}"></script>
     <title>掲示板</title>
 </head>
+<body onload="loadMessages();">
+
 <h1>DDDで開発してみた掲示板</h1>
+
 <form id="message">
     <textarea name="comment" maxlength="100" cols="40" rows="5"></textarea><br>
-    <input type="button" id="postMessageButton" value="登録"/><br>
+    <input type="button" id="postMessageButton" value="登録" onclick="postMessage();"/><br>
 </form>
 <hr>
 
 <div id="messagesArea"></div>
-
-<script type="text/javascript">
-
-  window.onload = loadMessages();
-
-  function loadMessages(){
-  $.ajax({
-      url  :'messages',
-      type :'GET',
-      data :{
-        '_csrf': $.cookie('XSRF-TOKEN')
-      }
-    })
-    // リクエスト成功時
-    .done((data) => {
-      $('#messagesArea').html(data);
-    })
-    // リクエスト失敗時
-    .fail( (data) => {
-      alert("通信エラーが発生したため再読込して下さい。");
-    })
-  }
-
-  postMessageButton.onclick = function(){
-    $.ajax({
-      url  :'poster/message',
-      type :'POST',
-      data :{
-        '_csrf'   : $.cookie('XSRF-TOKEN'),
-        'comment' : $('#message [name=comment]').val()
-      }
-    })
-    // リクエスト成功時
-    .done((data) => {
-      $('#message [name=comment]').val(null);
-      loadMessages();
-    })
-    // リクエスト失敗時
-    .fail( (data) => {
-      alert("通信エラーが発生したため再読込して下さい。");
-    })
-  }
-
-  function postReply(targetFrom){
-    $.ajax({
-      url  :'poster/reply',
-      type :'POST',
-      data :{
-        '_csrf'   : $.cookie('XSRF-TOKEN'),
-        'postNo'  : $('#' + targetFrom + ' [name=postNo]').val(),
-        'comment' : $('#' + targetFrom + ' [name=comment]').val()
-      }
-    })
-    // リクエスト成功時
-    .done((data) => {
-      loadMessages();
-    })
-    // リクエスト失敗時
-    .fail( (data) => {
-      alert("通信エラーが発生したため再読込して下さい。");
-    })
-  }
-</script>
 
 </body>
 </html>
