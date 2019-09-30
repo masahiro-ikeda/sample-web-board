@@ -7,7 +7,7 @@ import com.sample.board.domain.message.MessageType
 import com.sample.board.domain.user.LoginUser
 import com.sample.board.presentation.form.IReplyCheck
 import com.sample.board.presentation.form.PostMessageForm
-import com.sample.board.presentation.presenter.PostPresenter
+import com.sample.board.presentation.presenter.MessagePresenter
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.validation.BindingResult
 import org.springframework.validation.SmartValidator
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*
 class MessageController(
     val service: IMessageService,
     val validator: SmartValidator,
-    val presenter: PostPresenter
+    val presenter: MessagePresenter
 ) {
 
     /**
@@ -68,10 +68,10 @@ class MessageController(
     }
 
     @GetMapping
-    fun readMessages(
+    fun getMessages(
         @AuthenticationPrincipal loginUser: LoginUser
     ): String {
-        val messages = service.fetchMessages()
+        val messages = service.fetchAllMessage()
         return presenter.formatToHtml(messages, loginUser)
     }
 }

@@ -2,16 +2,40 @@ package com.sample.board.domain.message
 
 import kotlin.streams.toList
 
+/**
+ * 投稿メッセージモデル
+ */
 open class Message {
+
+    /* メッセージID */
     val id: String
+    /* メッセージ種別 */
     val messageType: MessageType
+    /* 投稿No */
     val postNo: Int
+    /* 返信No */
     val replyNo: Int
+    /* 投稿ユーザID */
     val userId: String
+    /* 投稿内容 */
     val comment: String
+    /* 削除フラグ */
     private var isDeleted: Int
+    /* いいね一覧 */
     private var goodList: MutableList<Good>
 
+    /**
+     * コンストラクタ
+     *
+     * @param id
+     * @param messageType
+     * @param postNo
+     * @param replyNo
+     * @param userId
+     * @param comment
+     * @param isDeleted
+     * @param goodList
+     */
     constructor(
         id: String,
         messageType: String,
@@ -47,7 +71,7 @@ open class Message {
         goodList.add(good)
     }
 
-    fun removeGood(targetUserId: String) {
+    fun cancelGood(targetUserId: String) {
 
         // いいねが1件もないときはエラー
         if (goodList.size == 0) throw IllegalArgumentException()

@@ -6,7 +6,7 @@ import com.sample.board.domain.user.LoginUser
 import org.springframework.stereotype.Component
 
 @Component
-class PostPresenter() {
+class MessagePresenter {
 
     fun formatToHtml(messages: List<MessageForDisplay>, loginUser: LoginUser): String {
         val builder = StringBuilder()
@@ -16,14 +16,14 @@ class PostPresenter() {
         }.forEach { message ->
             // メッセージを描画
             builder.append(formatMessage(message))
-            builder.append(setGoodForm(message, loginUser))
+            builder.append(formatGoodForm(message, loginUser))
 
             // 返信を描画
             messages.stream().filter {
                 it.isReply() && it.postNo.equals(message.postNo)
             }.forEach { reply ->
                 builder.append(formatReply(reply))
-                builder.append(setGoodForm(reply, loginUser))
+                builder.append(formatGoodForm(reply, loginUser))
             }
 
             // 返信欄を描画
@@ -36,7 +36,7 @@ class PostPresenter() {
         val builder = StringBuilder()
         builder.append("<p class=\"message\">投稿No: ${target.postNo} / 投稿者: ${target.userName} / 投稿時間: ${target.createdAt}</p><br>")
         builder.append("<br>")
-        builder.append("<p>${target.comment}</p><br>")
+        builder.append("<p>${formatText(target.comment)}</p><br>")
         builder.append("<br>")
         return builder.toString()
     }
@@ -45,12 +45,12 @@ class PostPresenter() {
         val builder = StringBuilder()
         builder.append("<p class=\"reply\">返信No: ${target.replyNo} / 投稿者: ${target.userName} / 投稿時間: ${target.createdAt}</p><br>")
         builder.append("<br>")
-        builder.append("<p>${target.comment}</p><br>")
+        builder.append("<p>${formatText(target.comment)}</p><br>")
         builder.append("<br>")
         return builder.toString()
     }
 
-    private fun setGoodForm(target: MessageForDisplay, loginUser: LoginUser): String {
+    private fun formatGoodForm(target: MessageForDisplay, loginUser: LoginUser): String {
         val builder = StringBuilder()
         builder.append("<form id=\"goodTo${target.id}\">")
         builder.append("<input type=\"hidden\" name=\"id\" value=\"${target.id}\">")
@@ -70,5 +70,24 @@ class PostPresenter() {
         builder.append("</form>")
         builder.append("<hr>")
         return builder.toString()
+    }
+
+    /**
+     * 長文テキストデータをWebページ表示用に整形
+     */
+    private fun formatText(input: String): String {
+        var output = input
+
+        // サニタイズ
+        output = output.replace("&", "&amp;")
+        output = output.replace("\"", "&quot;")
+        output = output.replace("<", "&lt;")
+        output = output.replace(">", "&gt;")
+        output = output.replace("'", "&#39;")
+
+        // 改行コード変換
+        output = output.replace(System.lineSeparator(), "<br>")
+
+        return output
     }
 }

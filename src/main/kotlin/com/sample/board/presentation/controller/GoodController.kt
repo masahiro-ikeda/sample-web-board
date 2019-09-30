@@ -1,8 +1,8 @@
 package com.sample.board.presentation.controller
 
-import com.sample.board.application.GoodService
+import com.sample.board.application.implement.GoodService
 import com.sample.board.application.dto.PostGoodDto
-import com.sample.board.application.dto.RemoveGoodDto
+import com.sample.board.application.dto.CancelGoodDto
 import com.sample.board.domain.user.LoginUser
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.PostMapping
@@ -37,7 +37,7 @@ class GoodController(
     ) {
         if (messageId.isNullOrEmpty()) throw IllegalArgumentException()
 
-        val dto = RemoveGoodDto(messageId, loginUser.username)
-        service.removeGood(dto)
+        val dto = CancelGoodDto(messageId, loginUser.username)
+        service.cancelGood(dto)
     }
 }

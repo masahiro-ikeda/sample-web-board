@@ -6,8 +6,11 @@ import org.springframework.web.bind.annotation.RequestMapping
 
 @Controller
 @RequestMapping("/")
-class BoardController(
-) {
+class BoardController{
+
+    /**
+     * 掲示板画面を表示させる
+     */
     @GetMapping
     fun displayBoard(): String {
         return "board"

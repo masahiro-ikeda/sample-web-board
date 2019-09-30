@@ -15,6 +15,10 @@ class MessageQueryImpl(private val mapper: MessageQueryMapper) : IMessageQuery {
         return mapper.selectById(id)
     }
 
+    override fun fetchByPostNo(postNo: Int): List<MessageDto>? {
+        return mapper.selectByPostNo(postNo)
+    }
+
     override fun fetchMaxPostNo(): Int {
         return mapper.selectMaxPostNo()
     }
