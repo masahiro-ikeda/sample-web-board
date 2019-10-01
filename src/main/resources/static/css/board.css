@@ -1,0 +1,37 @@
+body {
+    font-family: meiryo, arial;
+    max-width: 80%;
+    margin: 0 auto;
+    padding: 6px;
+    background: #6AC1B7;
+}
+
+h1 {
+    text-align: center;
+    background: #517D99;
+    font-size:  2em;
+    color: white;
+}
+
+.logout {
+    text-align: right;
+}
+
+.message{
+    background: #BFE9DB;
+    padding: 5px;
+    border-top: solid 1px white;
+}
+
+.reply{
+    background: #DFEFED;
+    padding: 5px;
+    border-left: solid 15px #BFE9DB;
+    border-top: solid 1px white;
+}
+
+.reply-form {
+    background: #FFC042;
+    padding: 5px;
+    border-top: solid 1px white;
+}

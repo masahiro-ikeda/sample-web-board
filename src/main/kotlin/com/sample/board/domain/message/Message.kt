@@ -71,7 +71,7 @@ open class Message {
         goodList.add(good)
     }
 
-    fun cancelGood(targetUserId: String) {
+    fun removeGood(targetUserId: String) {
 
         // いいねが1件もないときはエラー
         if (goodList.size == 0) throw IllegalArgumentException()

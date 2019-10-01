@@ -51,7 +51,7 @@ interface MessageQueryMapper {
         WHERE
           msg.is_deleted = 0
         ORDER BY
-          msg.post_no, msg.reply_no
+          msg.post_no DESC, msg.reply_no
         """
     )
     fun selectAll(): List<MessageDto>?

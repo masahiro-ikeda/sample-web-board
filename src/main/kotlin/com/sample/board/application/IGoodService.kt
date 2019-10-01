@@ -1,9 +1,9 @@
 package com.sample.board.application
 
 import com.sample.board.application.dto.PostGoodDto
-import com.sample.board.application.dto.CancelGoodDto
+import com.sample.board.application.dto.RemoveGoodDto
 
 interface IGoodService {
     fun postGood(dto: PostGoodDto)
-    fun cancelGood(dto: CancelGoodDto)
+    fun removeGood(dto: RemoveGoodDto)
 }

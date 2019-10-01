@@ -54,8 +54,8 @@ interface MessageMapper {
         UPDATE 
           messages
         SET
-          is_delete = 1,
-          updatedAt = NOW()
+          is_deleted = 1,
+          updated_at = NOW()
         WHERE
           id = #{id}
         """

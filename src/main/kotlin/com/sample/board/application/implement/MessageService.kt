@@ -4,16 +4,13 @@ import com.sample.board.application.IMessageService
 import com.sample.board.application.dto.PostMessageDto
 import com.sample.board.application.dto.PostReplyDto
 import com.sample.board.application.message.MessageResources
-import com.sample.board.domain.message.IMessageRepository
-import com.sample.board.domain.message.Message
-import com.sample.board.domain.message.MessageType
-import com.sample.board.domain.message.MessageForDisplay
-import com.sample.board.domain.message.Good
+import com.sample.board.domain.message.*
+import com.sample.board.domain.user.LoginUser
 import com.sample.board.query.IGoodQuery
 import com.sample.board.query.IMessageQuery
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
+import java.util.*
 import java.util.stream.Collectors
 
 /**
@@ -52,7 +49,6 @@ class MessageService(
             0,
             mutableListOf<Good>()
         )
-
         // 永続化
         repository.store(message)
     }
@@ -81,7 +77,6 @@ class MessageService(
             0,
             mutableListOf()
         )
-
         // 永続化
         repository.store(message)
     }
@@ -93,7 +88,7 @@ class MessageService(
      * @param messageId 削除対象メッセージID
      */
     @Transactional
-    override fun deleteMessage(messageId: String) {
+    override fun deleteMessage(messageId: String, loginUser: LoginUser) {
 
         // メッセージモデルの生成
         val messageDto = messageQuery.fetchById(messageId)
@@ -110,18 +105,23 @@ class MessageService(
             goodList
         )
 
+        // 自身のメッセージを削除しているかチェック
+        if (!message.userId.equals(loginUser.username)) {
+            throw IllegalArgumentException()
+        }
+
         // メッセージ削除
         message.delete()
-
         // 永続化
         repository.store(message)
     }
+
 
     /**
      * 画面表示用に投稿メッセージを全取得
      *
      */
-    override fun fetchAllMessage(): List<MessageForDisplay> {
+    override fun getMessages(): List<MessageForDisplay> {
 
         val messageForDisplayList = mutableListOf<MessageForDisplay>()
         val allMessage = messageQuery.fetchAll() ?: listOf()

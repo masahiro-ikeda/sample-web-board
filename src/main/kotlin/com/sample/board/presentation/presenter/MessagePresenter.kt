@@ -4,9 +4,16 @@ import com.sample.board.domain.message.MessageForDisplay
 import com.sample.board.domain.message.MessageType
 import com.sample.board.domain.user.LoginUser
 import org.springframework.stereotype.Component
+import java.time.format.DateTimeFormatter
+
 
 @Component
 class MessagePresenter {
+
+    companion object {
+        val FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
+        const val SEPARATOR = " / "
+    }
 
     fun formatToHtml(messages: List<MessageForDisplay>, loginUser: LoginUser): String {
         val builder = StringBuilder()
@@ -15,60 +22,130 @@ class MessagePresenter {
             it.messageType == MessageType.MESSAGE
         }.forEach { message ->
             // メッセージを描画
-            builder.append(formatMessage(message))
-            builder.append(formatGoodForm(message, loginUser))
+            builder.append(formatMessage(message, loginUser))
 
             // 返信を描画
             messages.stream().filter {
                 it.isReply() && it.postNo.equals(message.postNo)
             }.forEach { reply ->
-                builder.append(formatReply(reply))
-                builder.append(formatGoodForm(reply, loginUser))
+                builder.append(formatReply(reply, loginUser))
             }
 
-            // 返信欄を描画
+            // 返信フォームを描画
             builder.append(formatReplyForm(message))
         }
+
         return builder.toString()
     }
 
-    private fun formatMessage(target: MessageForDisplay): String {
+    /**
+     * 種別：MESSAGEをHTMLに描画する
+     */
+    private fun formatMessage(message: MessageForDisplay, loginUser: LoginUser): String {
         val builder = StringBuilder()
-        builder.append("<p class=\"message\">投稿No: ${target.postNo} / 投稿者: ${target.userName} / 投稿時間: ${target.createdAt}</p><br>")
-        builder.append("<br>")
-        builder.append("<p>${formatText(target.comment)}</p><br>")
-        builder.append("<br>")
+        builder.append("<div class=\"message\">")
+        // メッセージ本体
+        builder.append(createMessageBody(message))
+
+        builder.append("<table><tr><td>")
+        // いいねボタン
+        builder.append(createGoodForm(message, loginUser))
+        builder.append("</td>")
+        // 削除ボタン
+        if (message.userId == loginUser.username) {
+            builder.append("<td>")
+            builder.append(createDeleteForm(message))
+            builder.append("</td>")
+        }
+        builder.append("</table>")
+
+        builder.append("</div>")
         return builder.toString()
     }
 
-    private fun formatReply(target: MessageForDisplay): String {
+    /**
+     * 種別：REPLYをHTMLに描画する
+     */
+    private fun formatReply(reply: MessageForDisplay, loginUser: LoginUser): String {
         val builder = StringBuilder()
-        builder.append("<p class=\"reply\">返信No: ${target.replyNo} / 投稿者: ${target.userName} / 投稿時間: ${target.createdAt}</p><br>")
-        builder.append("<br>")
-        builder.append("<p>${formatText(target.comment)}</p><br>")
-        builder.append("<br>")
+        builder.append("<div class=\"reply\">")
+        // リプライ本体
+        builder.append(createReplyBody(reply))
+
+        builder.append("<table><tr><td>")
+        // いいねボタン
+        builder.append(createGoodForm(reply, loginUser))
+        builder.append("</td>")
+        // 削除ボタン
+        if (reply.userId == loginUser.username) {
+            builder.append("<td>")
+            builder.append(createDeleteForm(reply))
+            builder.append("</td>")
+        }
+        builder.append("</table>")
+
+        builder.append("</div>")
         return builder.toString()
     }
 
-    private fun formatGoodForm(target: MessageForDisplay, loginUser: LoginUser): String {
+    private fun createMessageBody(body: MessageForDisplay): String {
+        val builder = StringBuilder()
+        builder.append("<p>")
+        builder.append("投稿No: ${body.postNo}")
+        builder.append(SEPARATOR)
+        builder.append("投稿者: ${body.userName}")
+        builder.append(SEPARATOR)
+        builder.append("投稿時間: ${body.createdAt.format(FORMATTER)}")
+        builder.append("</p>")
+        builder.append("</br>")
+        builder.append("<p>${formatText(body.comment)}</p>")
+        builder.append("</br>")
+        return builder.toString()
+    }
+
+    private fun createReplyBody(body: MessageForDisplay): String {
+        val builder = StringBuilder()
+        builder.append("<p>")
+        builder.append("返信No: ${body.replyNo}")
+        builder.append(SEPARATOR)
+        builder.append("投稿者: ${body.userName}")
+        builder.append(SEPARATOR)
+        builder.append("投稿時間: ${body.createdAt.format(FORMATTER)}")
+        builder.append("</p>")
+        builder.append("</br>")
+        builder.append("<p>${formatText(body.comment)}</p>")
+        builder.append("</br>")
+        return builder.toString()
+    }
+
+    private fun createGoodForm(target: MessageForDisplay, loginUser: LoginUser): String {
         val builder = StringBuilder()
         builder.append("<form id=\"goodTo${target.id}\">")
         builder.append("<input type=\"hidden\" name=\"id\" value=\"${target.id}\">")
         builder.append("<input type=\"hidden\" name=\"goodStatus\" value=\"${if (target.isAlreadyGood(loginUser.username)) "ENABLE" else "DISABLE"}\">")
         builder.append("<input type=\"button\" value=\"${target.getNumberOfGood()} いいね\" onclick=\"postGood('goodTo${target.id}')\"/>")
         builder.append("</form>")
-        builder.append("<hr>")
+        return builder.toString()
+    }
+
+    private fun createDeleteForm(target: MessageForDisplay): String {
+        val builder = StringBuilder()
+        builder.append("<form id=\"delete-${target.id}\">")
+        builder.append("<input type=\"hidden\" name=\"id\" value=\"${target.id}\">")
+        builder.append("<input type=\"button\" value=\"削除\" onclick=\"deleteMessage('delete-${target.id}')\"/>")
+        builder.append("</form>")
         return builder.toString()
     }
 
     private fun formatReplyForm(target: MessageForDisplay): String {
         val builder = StringBuilder()
-        builder.append("<form id=\"replyTo${target.postNo}\">")
+        builder.append("<div class=\"reply-form\">")
+        builder.append("<form id=\"reply-${target.postNo}\">")
         builder.append("<input type=\"hidden\" name=\"postNo\" value=\"${target.postNo}\">")
         builder.append("<textarea name=\"comment\" maxlength=\"100\" cols=\"40\" rows=\"2\"></textarea><br>")
-        builder.append("<input type=\"button\" value=\"返信\" onclick=\"postReply('replyTo${target.postNo}')\"/><br>")
+        builder.append("<input type=\"button\" value=\"返信\" onclick=\"postReply('reply-${target.postNo}')\"/>")
         builder.append("</form>")
-        builder.append("<hr>")
+        builder.append("</div>")
         return builder.toString()
     }
 
@@ -86,7 +163,7 @@ class MessagePresenter {
         output = output.replace("'", "&#39;")
 
         // 改行コード変換
-        output = output.replace(System.lineSeparator(), "<br>")
+        output = output.replace("\n", "<br>")
 
         return output
     }

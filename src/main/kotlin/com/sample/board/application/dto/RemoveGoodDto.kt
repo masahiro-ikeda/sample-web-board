@@ -1,6 +1,6 @@
 package com.sample.board.application.dto
 
-data class CancelGoodDto(
+data class RemoveGoodDto(
     val messageId: String,
     val userId: String
 )

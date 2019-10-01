@@ -67,11 +67,31 @@ class MessageController(
         }
     }
 
+
+    /**
+     * メッセージの削除を行う
+     *
+     * @param messageId メッセージID
+     * @param loginUser ログインユーザ
+     */
+    @PostMapping("deleter")
+    fun postMessage(
+        @RequestParam("messageId") messageId: String, @AuthenticationPrincipal loginUser: LoginUser
+    ) {
+        service.deleteMessage(messageId, loginUser)
+    }
+
+
+    /**
+     * メッセージの取得を行う
+     *
+     * @param loginUser ログインユーザ
+     */
     @GetMapping
     fun getMessages(
         @AuthenticationPrincipal loginUser: LoginUser
     ): String {
-        val messages = service.fetchAllMessage()
+        val messages = service.getMessages()
         return presenter.formatToHtml(messages, loginUser)
     }
 }

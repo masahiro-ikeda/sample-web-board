@@ -2,6 +2,8 @@
 <html lang="ja" xmlns:th="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.8.1/build/cssreset/cssreset-min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/board.css}">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
     <script th:src="@{/js/board.js}"></script>
@@ -9,13 +11,17 @@
 </head>
 <body onload="loadMessages();">
 
-<h1>DDDで開発してみた掲示板</h1>
+<h1>Twitter風の掲示板</h1>
+
+<div class="logout">
+<a th:href="@{/security/logout}">ログアウト</a>
+</div>
 
 <form id="message">
-    <textarea name="comment" maxlength="100" cols="40" rows="5"></textarea><br>
-    <input type="button" id="postMessageButton" value="登録" onclick="postMessage();"/><br>
+    <textarea name="comment" maxlength="100" cols="50" rows="3"></textarea><br>
+    <input type="button" id="postMessageButton" value="投稿" onclick="postMessage();"/><br>
+    <br>
 </form>
-<hr>
 
 <div id="messagesArea"></div>
 

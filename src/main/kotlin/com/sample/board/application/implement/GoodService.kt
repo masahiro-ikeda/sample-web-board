@@ -2,7 +2,7 @@ package com.sample.board.application.implement
 
 import com.sample.board.application.IGoodService
 import com.sample.board.application.dto.PostGoodDto
-import com.sample.board.application.dto.CancelGoodDto
+import com.sample.board.application.dto.RemoveGoodDto
 import com.sample.board.application.message.MessageResources
 import com.sample.board.domain.message.Good
 import com.sample.board.domain.message.IMessageRepository
@@ -57,7 +57,6 @@ class GoodService(
         message.addGood(
             Good(UUID.randomUUID().toString(), dto.messageId, dto.userId, 0)
         )
-
         // 永続化
         repository.store(message)
     }
@@ -68,7 +67,7 @@ class GoodService(
      * @param dto いいね取消DTO
      */
     @Transactional
-    override fun cancelGood(dto: CancelGoodDto) {
+    override fun removeGood(dto: RemoveGoodDto) {
 
         // メッセージモデルの生成
         val messageDto = messageQuery.fetchById(dto.messageId)
@@ -86,8 +85,7 @@ class GoodService(
         )
 
         // いいねのキャンセル
-        message.cancelGood(dto.userId)
-
+        message.removeGood(dto.userId)
         // 永続化
         repository.store(message)
     }
