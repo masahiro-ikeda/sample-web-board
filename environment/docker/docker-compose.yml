@@ -2,13 +2,6 @@ version: '3'
 services:
   db:
     build: ./mysql/  # 左記フォルダの以下のDockerfileを利用
-    volumes:
-      - ./mysql/init:/docker-entrypoint-initdb.d  # 初期データ投入
-    environment:
-      - MYSQL_ROOT_PASSWORD=pass   # パスワード
-      - MYSQL_USER=dev-user
-      - MYSQL_PASSWORD=dev-pass
-      - MYSQL_DATABASE=develop
     ports:
       - "3306:3306" # ポートを開ける
 
