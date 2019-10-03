@@ -2,8 +2,8 @@ package com.sample.board.presentation.controller.page
 
 import com.sample.board.application.IUserService
 import com.sample.board.application.dto.RegisterUserDto
-import com.sample.board.presentation.form.IFormatCheck
-import com.sample.board.presentation.form.INullCheck
+import com.sample.board.application.exception.DuplicateUserException
+import com.sample.board.domain.user.UserRole
 import com.sample.board.presentation.form.RegisterUserForm
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -35,20 +35,13 @@ class UserController(
         return "register-user"
     }
 
-    @PostMapping
+    @PostMapping("register")
     fun registerUser(
         model: Model, @ModelAttribute(REGISTER_USER_FORM) input: RegisterUserForm, bindingResult: BindingResult
     ): String {
 
-        // 必須チェック
-        validator.validate(input, bindingResult, INullCheck::class.java)
-        if (bindingResult.hasErrors()) {
-            model.addAttribute(REGISTER_USER_FORM, input)
-            return "register-user"
-        }
-
-        // 形式チェック
-        validator.validate(input, bindingResult, IFormatCheck::class.java)
+        // バリデーションチェック
+        validator.validate(input, bindingResult)
         if (bindingResult.hasErrors()) {
             model.addAttribute(REGISTER_USER_FORM, input)
             return "register-user"
@@ -59,11 +52,15 @@ class UserController(
                 input.userId!!,
                 input.password!!,
                 input.userName!!,
-                input.userRole!!
+                UserRole.USER
             )
             service.registerUser(dto)
-        } catch (e: IllegalArgumentException) {
-            bindingResult.addError(FieldError(REGISTER_USER_FORM, "userId", e.message!!))
+
+        } catch (e: DuplicateUserException) {
+            // 業務エラー発生時は登録画面に通知
+            bindingResult.addError(
+                FieldError(REGISTER_USER_FORM, "userId", e.message!!)
+            )
             model.addAttribute(REGISTER_USER_FORM, input)
             return "register-user"
         }

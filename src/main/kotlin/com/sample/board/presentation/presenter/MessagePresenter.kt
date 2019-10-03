@@ -122,6 +122,7 @@ class MessagePresenter {
         val builder = StringBuilder()
         builder.append("<form id=\"goodTo${target.id}\">")
         if (target.isAlreadyGood(loginUser.username)) {
+            // いいね済みの場合は削除フォームを生成
             builder.append("<input type=\"button\" value=\"${target.getNumberOfGood()} いいね\" onclick=\"deleteGood('${target.id}')\"/>")
         } else {
             builder.append("<input type=\"button\" value=\"${target.getNumberOfGood()} いいね\" onclick=\"postGood('${target.id}')\"/>")
@@ -133,8 +134,7 @@ class MessagePresenter {
     private fun createDeleteForm(target: MessageForDisplay): String {
         val builder = StringBuilder()
         builder.append("<form id=\"delete-${target.id}\">")
-        builder.append("<input type=\"hidden\" name=\"id\" value=\"${target.id}\">")
-        builder.append("<input type=\"button\" value=\"削除\" onclick=\"deleteMessage('delete-${target.id}')\"/>")
+        builder.append("<input type=\"button\" value=\"削除\" onclick=\"deleteMessage('${target.id}')\"/>")
         builder.append("</form>")
         return builder.toString()
     }

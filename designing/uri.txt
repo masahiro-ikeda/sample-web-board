@@ -3,7 +3,7 @@ GET 　/home  -> 掲示板画面
 GET 　/login -> ログイン画面
 
 GET 　/user/register -> ユーザー登録画面
-POST  /user          -> ユーザー登録実施
+POST  /user/register -> ユーザー登録実施
 
 # RestController
 GET     /api/message      -> メッセージ取得
@@ -13,6 +13,6 @@ DELETE  /api/message/{id} -> メッセージ削除
 POST    /api/good/{id}    -> いいね投稿
 DELETE  /api/good/{id}    -> いいね削除
 
-# Other
+# Security
 POST    /security/login  -> ログイン実施
 POST    /security/logout -> ログアウト実施

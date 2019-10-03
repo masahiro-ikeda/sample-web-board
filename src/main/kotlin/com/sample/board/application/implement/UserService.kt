@@ -2,7 +2,7 @@ package com.sample.board.application.implement
 
 import com.sample.board.application.IUserService
 import com.sample.board.application.dto.RegisterUserDto
-import com.sample.board.application.message.MessageResources
+import com.sample.board.application.exception.DuplicateUserException
 import com.sample.board.domain.user.IUserRepository
 import com.sample.board.domain.user.User
 import com.sample.board.domain.user.UserRole
@@ -12,12 +12,11 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UserService(
+
     /** ユーザリポジトリ */
     private val repository: IUserRepository,
     /** ユーザクエリ */
-    private val query: IUserQuery,
-    /** メッセージ内容の取得元 */
-    private val errorMessage: MessageResources
+    private val query: IUserQuery
 
 ) : IUserService {
 
@@ -40,8 +39,8 @@ class UserService(
 
         // IDの重複チェック
         if (query.fetchUserById(user.id) != null) {
-            val message = errorMessage.get("error.application.duplicating", "ユーザーID")
-            throw IllegalArgumentException(message)
+            // 登録済みのため例外スロー
+            throw DuplicateUserException()
         }
 
         // 永続化

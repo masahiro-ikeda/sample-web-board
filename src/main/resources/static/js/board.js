@@ -12,7 +12,7 @@ function loadMessages(){
   })
   // リクエスト失敗時
   .fail( (data) => {
-    alert("通信エラーが発生したため再読込して下さい。");
+    alert(data);
   })
 }
 
@@ -33,7 +33,7 @@ function postMessage(){
   })
   // リクエスト失敗時
   .fail( (data) => {
-    alert("通信エラーが発生したため再送信して下さい。");
+    alert(data);
   })
 }
 
@@ -54,12 +54,11 @@ function postReply(targetFrom){
   })
   // リクエスト失敗時
   .fail( (data) => {
-    alert("通信エラーが発生したため再送信して下さい。");
+    alert(data);
   })
 }
 
-function deleteMessage(targetFrom){
-  let messageId = $('#' + targetFrom + ' [name=id]').val()
+function deleteMessage(messageId){
   $.ajax({
     url  : 'api/message/' + messageId,
     type : 'DELETE',
@@ -73,12 +72,11 @@ function deleteMessage(targetFrom){
   })
   // リクエスト失敗時
   .fail( (data) => {
-    alert("通信エラーが発生したため再送信して下さい。");
+    alert(data);
   })
 }
 
 function postGood(messageId){
-
   $.ajax({
     url  : 'api/good/' + messageId,
     type : 'POST',
@@ -92,12 +90,11 @@ function postGood(messageId){
   })
   // リクエスト失敗時
   .fail( (data) => {
-    alert("通信エラーが発生したため再送信して下さい。");
+    alert(data);
   })
 }
 
 function deleteGood(messageId){
-
   $.ajax({
     url  : 'api/good/' + messageId,
     type : 'DELETE',
@@ -111,6 +108,6 @@ function deleteGood(messageId){
   })
   // リクエスト失敗時
   .fail( (data) => {
-    alert("通信エラーが発生したため再送信して下さい。");
+    alert(data);
   })
 }
