@@ -1,4 +1,4 @@
-package com.sample.board.presentation.controller
+package com.sample.board.presentation.controller.page
 
 import com.sample.board.application.IUserService
 import com.sample.board.application.dto.RegisterUserDto
@@ -35,7 +35,7 @@ class UserController(
         return "register-user"
     }
 
-    @PostMapping("register")
+    @PostMapping
     fun registerUser(
         model: Model, @ModelAttribute(REGISTER_USER_FORM) input: RegisterUserForm, bindingResult: BindingResult
     ): String {

@@ -5,7 +5,7 @@
     <title>新規登録</title>
 </head>
 <body>
-<form th:object="${RegisterUserForm}" th:action="@{/user/register}" method="post">
+<form th:object="${RegisterUserForm}" th:action="@{/user}" method="post">
     <label>ユーザID</label><br>
     <input type="text" th:field="*{userId}" placeholder="半角英数字(25文字)" maxlength="25"/><br>
     <span th:if="${#fields.hasErrors('userId')}" th:errors="*{userId}" class="errorMsg">error!</span><br>

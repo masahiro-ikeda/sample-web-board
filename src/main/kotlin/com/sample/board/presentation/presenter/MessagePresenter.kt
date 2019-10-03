@@ -121,9 +121,11 @@ class MessagePresenter {
     private fun createGoodForm(target: MessageForDisplay, loginUser: LoginUser): String {
         val builder = StringBuilder()
         builder.append("<form id=\"goodTo${target.id}\">")
-        builder.append("<input type=\"hidden\" name=\"id\" value=\"${target.id}\">")
-        builder.append("<input type=\"hidden\" name=\"goodStatus\" value=\"${if (target.isAlreadyGood(loginUser.username)) "ENABLE" else "DISABLE"}\">")
-        builder.append("<input type=\"button\" value=\"${target.getNumberOfGood()} いいね\" onclick=\"postGood('goodTo${target.id}')\"/>")
+        if (target.isAlreadyGood(loginUser.username)) {
+            builder.append("<input type=\"button\" value=\"${target.getNumberOfGood()} いいね\" onclick=\"deleteGood('${target.id}')\"/>")
+        } else {
+            builder.append("<input type=\"button\" value=\"${target.getNumberOfGood()} いいね\" onclick=\"postGood('${target.id}')\"/>")
+        }
         builder.append("</form>")
         return builder.toString()
     }

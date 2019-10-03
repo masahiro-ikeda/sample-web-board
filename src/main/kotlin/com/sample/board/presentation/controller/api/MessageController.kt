@@ -1,4 +1,4 @@
-package com.sample.board.presentation.controller
+package com.sample.board.presentation.controller.api
 
 import com.sample.board.application.IMessageService
 import com.sample.board.application.dto.PostMessageDto
@@ -31,7 +31,7 @@ class MessageController(
      * @param bindingResult バリデーション結果
      * @param loginUser ログインユーザ
      */
-    @PostMapping("poster")
+    @PostMapping
     fun postMessage(
         @ModelAttribute("PostMessageForm") input: PostMessageForm,
         bindingResult: BindingResult, @AuthenticationPrincipal loginUser: LoginUser
@@ -67,20 +67,20 @@ class MessageController(
         }
     }
 
-
     /**
      * メッセージの削除を行う
      *
      * @param messageId メッセージID
      * @param loginUser ログインユーザ
      */
-    @PostMapping("deleter")
-    fun postMessage(
-        @RequestParam("messageId") messageId: String, @AuthenticationPrincipal loginUser: LoginUser
+    @DeleteMapping("/{messageId}")
+    fun deleteMessage(
+        @PathVariable("messageId") messageId: String?,
+        @AuthenticationPrincipal loginUser: LoginUser
     ) {
+        if (messageId.isNullOrEmpty()) throw IllegalArgumentException()
         service.deleteMessage(messageId, loginUser)
     }
-
 
     /**
      * メッセージの取得を行う
@@ -88,9 +88,7 @@ class MessageController(
      * @param loginUser ログインユーザ
      */
     @GetMapping
-    fun getMessages(
-        @AuthenticationPrincipal loginUser: LoginUser
-    ): String {
+    fun getMessages(@AuthenticationPrincipal loginUser: LoginUser): String {
         val messages = service.getMessages()
         return presenter.formatToHtml(messages, loginUser)
     }

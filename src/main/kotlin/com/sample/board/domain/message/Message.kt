@@ -91,7 +91,7 @@ open class Message {
     }
 
     fun isAlreadyGood(userId: String): Boolean {
-        return goodList.stream()
+        return !goodList.stream()
             .filter({ userId.equals(it.userId) })
             .toList()
             .isEmpty()

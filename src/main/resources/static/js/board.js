@@ -18,7 +18,7 @@ function loadMessages(){
 
 function postMessage(){
   $.ajax({
-    url  :'api/message/poster',
+    url  :'api/message',
     type :'POST',
     data :{
       '_csrf'   : $.cookie('XSRF-TOKEN'),
@@ -39,7 +39,7 @@ function postMessage(){
 
 function postReply(targetFrom){
   $.ajax({
-    url  :'api/message/poster',
+    url  :'api/message',
     type :'POST',
     data :{
       '_csrf'   : $.cookie('XSRF-TOKEN'),
@@ -58,19 +58,13 @@ function postReply(targetFrom){
   })
 }
 
-function postGood(targetFrom){
-
-  let url = 'api/good/poster';
-  if ($('#' + targetFrom + ' [name=goodStatus]').val() == "DISABLE"){
-    url = 'api/good/remover/';
-  }
-
+function deleteMessage(targetFrom){
+  let messageId = $('#' + targetFrom + ' [name=id]').val()
   $.ajax({
-    url  : url,
-    type :'POST',
+    url  : 'api/message/' + messageId,
+    type : 'DELETE',
     data :{
-      '_csrf'      : $.cookie('XSRF-TOKEN'),
-      'messageId' : $('#' + targetFrom + ' [name=id]').val()
+      '_csrf' : $.cookie('XSRF-TOKEN'),
     }
   })
   // リクエスト成功時
@@ -83,14 +77,32 @@ function postGood(targetFrom){
   })
 }
 
-function deleteMessage(targetFrom){
+function postGood(messageId){
 
   $.ajax({
-    url  : 'api/message/deleter',
+    url  : 'api/good/' + messageId,
     type : 'POST',
     data :{
-      '_csrf'      : $.cookie('XSRF-TOKEN'),
-      'messageId' : $('#' + targetFrom + ' [name=id]').val()
+      '_csrf' : $.cookie('XSRF-TOKEN')
+    }
+  })
+  // リクエスト成功時
+  .done((data) => {
+    loadMessages();
+  })
+  // リクエスト失敗時
+  .fail( (data) => {
+    alert("通信エラーが発生したため再送信して下さい。");
+  })
+}
+
+function deleteGood(messageId){
+
+  $.ajax({
+    url  : 'api/good/' + messageId,
+    type : 'DELETE',
+    data :{
+      '_csrf' : $.cookie('XSRF-TOKEN')
     }
   })
   // リクエスト成功時

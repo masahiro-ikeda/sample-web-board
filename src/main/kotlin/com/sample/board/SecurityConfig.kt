@@ -44,7 +44,7 @@ class SecurityConfig(
             .loginProcessingUrl("/security/login")            // 認証URL
             .usernameParameter("userId")            // ユーザ名のリクエストパラメータ名
             .passwordParameter("password")            // パスワードのリクエストパラメータ名
-            .defaultSuccessUrl("/", true)        // 認証成功時の遷移先URL
+            .defaultSuccessUrl("/home", true)        // 認証成功時の遷移先URL
             .failureUrl("/error/403")    // 認証失敗時の遷移先URL
             .permitAll()
             .and()
