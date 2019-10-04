@@ -21,7 +21,7 @@ class PostMessageForm(
 
     @field:NotEmpty(message = "{error.validation.null}", groups = [IReplyCheck::class])
     @field:Pattern(
-        regexp = "^[0-9]+\$",
+        regexp = "^[0-9]*\$",
         message = "{error.validation.illegalPattern}",
         groups = [IReplyCheck::class]
     )

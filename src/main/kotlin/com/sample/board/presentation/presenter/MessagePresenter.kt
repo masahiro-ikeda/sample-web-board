@@ -2,7 +2,6 @@ package com.sample.board.presentation.presenter
 
 import com.sample.board.domain.message.MessageForDisplay
 import com.sample.board.domain.message.MessageType
-import com.sample.board.domain.user.LoginUser
 import org.springframework.stereotype.Component
 import java.time.format.DateTimeFormatter
 
@@ -15,20 +14,20 @@ class MessagePresenter {
         const val SEPARATOR = " / "
     }
 
-    fun formatToHtml(messages: List<MessageForDisplay>, loginUser: LoginUser): String {
+    fun formatToHtml(messages: List<MessageForDisplay>, loginUserId: String): String {
         val builder = StringBuilder()
 
         messages.stream().filter {
             it.messageType == MessageType.MESSAGE
         }.forEach { message ->
             // メッセージを描画
-            builder.append(formatMessage(message, loginUser))
+            builder.append(formatMessage(message, loginUserId))
 
             // 返信を描画
             messages.stream().filter {
-                it.isReply() && it.postNo.equals(message.postNo)
+                it.isReply() && it.postNo == message.postNo
             }.forEach { reply ->
-                builder.append(formatReply(reply, loginUser))
+                builder.append(formatReply(reply, loginUserId))
             }
 
             // 返信フォームを描画
@@ -41,7 +40,7 @@ class MessagePresenter {
     /**
      * 種別：MESSAGEをHTMLに描画する
      */
-    private fun formatMessage(message: MessageForDisplay, loginUser: LoginUser): String {
+    private fun formatMessage(message: MessageForDisplay, loginUserId: String): String {
         val builder = StringBuilder()
         builder.append("<div class=\"message\">")
         // メッセージ本体
@@ -49,10 +48,10 @@ class MessagePresenter {
 
         builder.append("<table><tr><td>")
         // いいねボタン
-        builder.append(createGoodForm(message, loginUser))
+        builder.append(createGoodForm(message, loginUserId))
         builder.append("</td>")
         // 削除ボタン
-        if (message.userId == loginUser.username) {
+        if (message.userId == loginUserId) {
             builder.append("<td>")
             builder.append(createDeleteForm(message))
             builder.append("</td>")
@@ -66,7 +65,7 @@ class MessagePresenter {
     /**
      * 種別：REPLYをHTMLに描画する
      */
-    private fun formatReply(reply: MessageForDisplay, loginUser: LoginUser): String {
+    private fun formatReply(reply: MessageForDisplay, loginUserId: String): String {
         val builder = StringBuilder()
         builder.append("<div class=\"reply\">")
         // リプライ本体
@@ -74,10 +73,10 @@ class MessagePresenter {
 
         builder.append("<table><tr><td>")
         // いいねボタン
-        builder.append(createGoodForm(reply, loginUser))
+        builder.append(createGoodForm(reply, loginUserId))
         builder.append("</td>")
         // 削除ボタン
-        if (reply.userId == loginUser.username) {
+        if (reply.userId == loginUserId) {
             builder.append("<td>")
             builder.append(createDeleteForm(reply))
             builder.append("</td>")
@@ -118,10 +117,10 @@ class MessagePresenter {
         return builder.toString()
     }
 
-    private fun createGoodForm(target: MessageForDisplay, loginUser: LoginUser): String {
+    private fun createGoodForm(target: MessageForDisplay, loginUserId: String): String {
         val builder = StringBuilder()
         builder.append("<form id=\"goodTo${target.id}\">")
-        if (target.isAlreadyGood(loginUser.username)) {
+        if (target.isAlreadyGood(loginUserId)) {
             // いいね済みの場合は削除フォームを生成
             builder.append("<input type=\"button\" value=\"${target.getNumberOfGood()} いいね\" onclick=\"deleteGood('${target.id}')\"/>")
         } else {

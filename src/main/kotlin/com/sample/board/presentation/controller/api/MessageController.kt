@@ -3,6 +3,7 @@ package com.sample.board.presentation.controller.api
 import com.sample.board.application.IMessageService
 import com.sample.board.application.dto.PostMessageDto
 import com.sample.board.application.dto.PostReplyDto
+import com.sample.board.application.exception.FormValidateException
 import com.sample.board.domain.message.MessageType
 import com.sample.board.domain.user.LoginUser
 import com.sample.board.presentation.form.IReplyCheck
@@ -39,11 +40,12 @@ class MessageController(
 
         // 共通チェック
         validator.validate(input, bindingResult)
-        if (bindingResult.hasErrors()) throw IllegalArgumentException()
+        if (bindingResult.hasErrors())
+            throw FormValidateException(bindingResult.fieldErrors)
 
         when {
             // メッセージの投稿
-            input.type.equals(MessageType.MESSAGE.name) -> {
+            (input.type == MessageType.MESSAGE.name) -> {
                 val dto = PostMessageDto(
                     loginUser.username,
                     input.comment!!
@@ -52,10 +54,11 @@ class MessageController(
             }
 
             // リプライの投稿
-            input.type.equals(MessageType.REPLY.name) -> {
+            (input.type == MessageType.REPLY.name) -> {
                 // 返信パラメータ用チェック
                 validator.validate(input, bindingResult, IReplyCheck::class)
-                if (bindingResult.hasErrors()) throw IllegalArgumentException()
+                if (bindingResult.hasErrors())
+                    throw FormValidateException(bindingResult.fieldErrors)
 
                 val dto = PostReplyDto(
                     input.postNo!!.toInt(),
@@ -73,13 +76,13 @@ class MessageController(
      * @param messageId メッセージID
      * @param loginUser ログインユーザ
      */
-    @DeleteMapping("/{messageId}")
+    @DeleteMapping("{messageId}")
     fun deleteMessage(
         @PathVariable("messageId") messageId: String?,
         @AuthenticationPrincipal loginUser: LoginUser
     ) {
         if (messageId.isNullOrEmpty()) throw IllegalArgumentException()
-        service.deleteMessage(messageId, loginUser)
+        service.deleteMessage(messageId, loginUser.username)
     }
 
     /**
@@ -90,6 +93,6 @@ class MessageController(
     @GetMapping
     fun getMessages(@AuthenticationPrincipal loginUser: LoginUser): String {
         val messages = service.getMessages()
-        return presenter.formatToHtml(messages, loginUser)
+        return presenter.formatToHtml(messages, loginUser.username)
     }
 }

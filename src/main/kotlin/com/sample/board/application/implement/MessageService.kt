@@ -3,13 +3,15 @@ package com.sample.board.application.implement
 import com.sample.board.application.IMessageService
 import com.sample.board.application.dto.PostMessageDto
 import com.sample.board.application.dto.PostReplyDto
+import com.sample.board.application.exception.MessageNotFoundException
 import com.sample.board.application.message.MessageResources
 import com.sample.board.domain.message.*
-import com.sample.board.domain.user.LoginUser
 import com.sample.board.query.IGoodQuery
 import com.sample.board.query.IMessageQuery
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.client.HttpClientErrorException
+import java.security.AccessControlException
 import java.util.*
 import java.util.stream.Collectors
 
@@ -63,8 +65,9 @@ class MessageService(
     override fun postReply(dto: PostReplyDto) {
 
         // 有効な投稿Noかチェック
-        messageQuery.fetchByPostNo(dto.postNo)
-            ?: throw IllegalArgumentException(errorMessage.get("error.application.message.notExist"))
+        if (null == messageQuery.fetchByPostNo(dto.postNo)) {
+            throw MessageNotFoundException("PostNo", dto.postNo.toString())
+        }
 
         // 新規メッセージモデル（返信）の生成
         val message = Message(
@@ -81,19 +84,19 @@ class MessageService(
         repository.store(message)
     }
 
-
     /**
-     * 新規メッセージの消去
+     * メッセージの消去
      *
      * @param messageId 削除対象メッセージID
      */
     @Transactional
-    override fun deleteMessage(messageId: String, loginUser: LoginUser) {
+    override fun deleteMessage(messageId: String, loginUserId: String) {
 
         // メッセージモデルの生成
         val messageDto = messageQuery.fetchById(messageId)
-            ?: throw IllegalArgumentException(errorMessage.get("error.application.message.notExist"))
+            ?: throw MessageNotFoundException("MessageId", messageId)
         val goodList = goodQuery.fetchGoodById(messageId) ?: mutableListOf()
+
         val message = Message(
             messageDto.id,
             messageDto.type.name,
@@ -105,9 +108,9 @@ class MessageService(
             goodList
         )
 
-        // 自身のメッセージを削除しているかチェック
-        if (!message.userId.equals(loginUser.username)) {
-            throw IllegalArgumentException()
+        // 他ユーザーのメッセージを削除していないか確認
+        if (message.userId != loginUserId) {
+            throw AccessControlException("")
         }
 
         // メッセージ削除

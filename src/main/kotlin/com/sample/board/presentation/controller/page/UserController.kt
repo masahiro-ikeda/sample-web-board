@@ -59,7 +59,9 @@ class UserController(
         } catch (e: DuplicateUserException) {
             // 業務エラー発生時は登録画面に通知
             bindingResult.addError(
-                FieldError(REGISTER_USER_FORM, "userId", e.message!!)
+                FieldError(
+                    bindingResult.objectName, "userId", input.userId!!, false, null, null, e.message!!
+                )
             )
             model.addAttribute(REGISTER_USER_FORM, input)
             return "register-user"

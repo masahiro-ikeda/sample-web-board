@@ -5,7 +5,6 @@ import com.sample.board.application.dto.RegisterUserDto
 import com.sample.board.application.exception.DuplicateUserException
 import com.sample.board.domain.user.IUserRepository
 import com.sample.board.domain.user.User
-import com.sample.board.domain.user.UserRole
 import com.sample.board.query.IUserQuery
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -21,7 +20,7 @@ class UserService(
 ) : IUserService {
 
     /**
-     * 一般ユーザーの新規登録
+     * ユーザーの新規登録
      *
      * @param dto ユーザ登録DTO
      */
@@ -33,7 +32,7 @@ class UserService(
             dto.userId,
             dto.password,
             dto.userName,
-            UserRole.USER.name,
+            dto.userRole,
             0
         )
 

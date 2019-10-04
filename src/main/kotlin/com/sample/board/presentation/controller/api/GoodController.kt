@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.*
  * いいねに関する処理を扱うコントローラ
  */
 @RestController
-@RequestMapping("api/good")
+@RequestMapping("api/good/{messageId}")
 class GoodController(
     val service: GoodService
 ) {
 
-    @PostMapping("/{messageId}")
+    @PostMapping
     fun postGood(
         @PathVariable("messageId") messageId: String?,
         @AuthenticationPrincipal loginUser: LoginUser
@@ -27,7 +27,7 @@ class GoodController(
         service.postGood(dto)
     }
 
-    @DeleteMapping("/{messageId}")
+    @DeleteMapping
     fun deleteGood(
         @PathVariable("messageId") messageId: String?,
         @AuthenticationPrincipal loginUser: LoginUser
