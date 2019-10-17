@@ -9,7 +9,7 @@ class MessageForDisplay : Message {
 
     constructor(
         id: String,
-        messageType: String,
+        messageType: MessageType,
         postNo: Int,
         replyNo: Int,
         userId: String,

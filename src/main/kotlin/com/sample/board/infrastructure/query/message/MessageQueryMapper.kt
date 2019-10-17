@@ -59,30 +59,6 @@ interface MessageQueryMapper {
     @Select(
         """
         SELECT
-          msg.id,
-          msg.type as message_type,
-          msg.post_no,
-          msg.reply_no,
-          msg.user_id,
-          usr.name as user_name,
-          msg.comment,
-          msg.is_deleted,
-          msg.created_at,
-          msg.updated_at
-        FROM
-          messages msg
-        INNER JOIN users usr
-          ON msg.user_id = usr.id
-        WHERE
-          msg.post_no = #{postNo} AND
-          msg.is_deleted = 0
-        """
-    )
-    fun selectByPostNo(postNo: Int): List<MessageDto>?
-
-    @Select(
-        """
-        SELECT
            IFNULL(max(post_no), 0)
         FROM
           messages

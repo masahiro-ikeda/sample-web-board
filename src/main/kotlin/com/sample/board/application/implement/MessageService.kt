@@ -8,6 +8,7 @@ import com.sample.board.application.message.MessageResources
 import com.sample.board.domain.message.*
 import com.sample.board.query.IGoodQuery
 import com.sample.board.query.IMessageQuery
+import com.sample.board.query.dto.MessageDto
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.client.HttpClientErrorException
@@ -26,9 +27,7 @@ class MessageService(
     /** メッセージクエリ */
     private val messageQuery: IMessageQuery,
     /** いいねクエリ */
-    private val goodQuery: IGoodQuery,
-    /** メッセージ内容の取得元 */
-    private val errorMessage: MessageResources
+    private val goodQuery: IGoodQuery
 
 ) : IMessageService {
 
@@ -38,21 +37,21 @@ class MessageService(
      * @param dto メッセージ投稿DTO
      */
     @Transactional
-    override fun postMessage(dto: PostMessageDto) {
+    override fun postMessage(input: PostMessageDto) {
 
         // 新規メッセージモデルの生成
-        val message = Message(
+        val newMessage = Message(
             UUID.randomUUID().toString(),
-            MessageType.MESSAGE.name,
+            MessageType.MESSAGE,
             messageQuery.fetchMaxPostNo() + 1,
             0,
-            dto.userId,
-            dto.comment,
+            input.userId,
+            input.comment,
             0,
             mutableListOf<Good>()
         )
         // 永続化
-        repository.store(message)
+        repository.store(newMessage)
     }
 
 
@@ -62,26 +61,25 @@ class MessageService(
      * @param dto 返信メッセージ投稿DTO
      */
     @Transactional
-    override fun postReply(dto: PostReplyDto) {
+    override fun postReply(input: PostReplyDto) {
 
-        // 有効な投稿Noかチェック
-        if (null == messageQuery.fetchByPostNo(dto.postNo)) {
-            throw MessageNotFoundException("PostNo", dto.postNo.toString())
-        }
+        // 返信対象のメッセージ情報の取得
+        val replyTarget: MessageDto =
+            messageQuery.fetchById(input.messageId) ?: throw IllegalArgumentException("無効なメッセージです。")
 
         // 新規メッセージモデル（返信）の生成
-        val message = Message(
+        val newReply = Message(
             UUID.randomUUID().toString(),
-            MessageType.REPLY.name,
-            dto.postNo,
-            messageQuery.fetchMaxReplyNo(dto.postNo) + 1,
-            dto.userId,
-            dto.comment,
+            MessageType.REPLY,
+            replyTarget.postNo,
+            messageQuery.fetchMaxReplyNo(replyTarget.postNo) + 1,
+            input.userId,
+            input.comment,
             0,
             mutableListOf()
         )
         // 永続化
-        repository.store(message)
+        repository.store(newReply)
     }
 
     /**
@@ -99,7 +97,7 @@ class MessageService(
 
         val message = Message(
             messageDto.id,
-            messageDto.type.name,
+            messageDto.type,
             messageDto.postNo,
             messageDto.replyNo,
             messageDto.userId,
@@ -135,7 +133,7 @@ class MessageService(
             val goods = allGood.stream().filter { good -> dto.id.equals(good.messageId) }.collect(Collectors.toList())
             val message = MessageForDisplay(
                 dto.id,
-                dto.type.name,
+                dto.type,
                 dto.postNo,
                 dto.replyNo,
                 dto.userId,

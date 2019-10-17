@@ -3,15 +3,9 @@ package com.sample.board.presentation.controller.api
 import com.sample.board.application.IMessageService
 import com.sample.board.application.dto.PostMessageDto
 import com.sample.board.application.dto.PostReplyDto
-import com.sample.board.application.exception.FormValidateException
-import com.sample.board.domain.message.MessageType
 import com.sample.board.domain.user.LoginUser
-import com.sample.board.presentation.form.IReplyCheck
-import com.sample.board.presentation.form.PostMessageForm
 import com.sample.board.presentation.presenter.MessagePresenter
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.validation.BindingResult
-import org.springframework.validation.SmartValidator
 import org.springframework.web.bind.annotation.*
 
 /**
@@ -21,53 +15,44 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("api/message")
 class MessageController(
     val service: IMessageService,
-    val validator: SmartValidator,
     val presenter: MessagePresenter
 ) {
 
     /**
      * メッセージの投稿を行う
      *
-     * @param input 入力値
-     * @param bindingResult バリデーション結果
-     * @param loginUser ログインユーザ
+     * @param comment コメント
      */
     @PostMapping
     fun postMessage(
-        @ModelAttribute("PostMessageForm") input: PostMessageForm,
-        bindingResult: BindingResult, @AuthenticationPrincipal loginUser: LoginUser
+        @RequestParam(value = "comment", required = false) comment: String?,
+        @AuthenticationPrincipal loginUser: LoginUser
     ) {
+        val dto = PostMessageDto(
+            loginUser.username,
+            comment
+        )
+        service.postMessage(dto)
+    }
 
-        // 共通チェック
-        validator.validate(input, bindingResult)
-        if (bindingResult.hasErrors())
-            throw FormValidateException(bindingResult.fieldErrors)
-
-        when {
-            // メッセージの投稿
-            (input.type == MessageType.MESSAGE.name) -> {
-                val dto = PostMessageDto(
-                    loginUser.username,
-                    input.comment!!
-                )
-                service.postMessage(dto)
-            }
-
-            // リプライの投稿
-            (input.type == MessageType.REPLY.name) -> {
-                // 返信パラメータ用チェック
-                validator.validate(input, bindingResult, IReplyCheck::class)
-                if (bindingResult.hasErrors())
-                    throw FormValidateException(bindingResult.fieldErrors)
-
-                val dto = PostReplyDto(
-                    input.postNo!!.toInt(),
-                    loginUser.username,
-                    input.comment!!
-                )
-                service.postReply(dto)
-            }
-        }
+    /**
+     * メッセージへの返信を行う
+     *
+     * @param messageId 返信対象のメッセージID
+     * @param comment コメント
+     */
+    @PostMapping("{messageId}")
+    fun postReply(
+        @PathVariable("messageId") messageId: String?,
+        @RequestParam(value = "comment", required = false) comment: String?,
+        @AuthenticationPrincipal loginUser: LoginUser
+    ) {
+        val dto = PostReplyDto(
+            loginUser.username,
+            messageId,
+            comment
+        )
+        service.postReply(dto)
     }
 
     /**

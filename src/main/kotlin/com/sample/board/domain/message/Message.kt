@@ -26,6 +26,7 @@ open class Message {
 
     /**
      * コンストラクタ
+     * 外部から入力される可能性のあるcommentは入力チェックを実施
      *
      * @param id
      * @param messageType
@@ -38,19 +39,27 @@ open class Message {
      */
     constructor(
         id: String,
-        messageType: String,
+        messageType: MessageType,
         postNo: Int,
         replyNo: Int,
         userId: String,
-        comment: String,
+        comment: String?,
         isDeleted: Int,
         goodList: MutableList<Good>
     ) {
         this.id = id
-        this.messageType = MessageType.valueOf(messageType)
+        this.messageType = messageType
         this.postNo = postNo
         this.replyNo = replyNo
         this.userId = userId
+        // 投稿メッセージの入力チェック
+        if (comment.isNullOrBlank()){
+            throw IllegalArgumentException("メッセージを入力して下さい。")
+        }
+        val maxLengthOfComment: Int = 100
+        if (comment.length > maxLengthOfComment){
+            throw IllegalArgumentException("メッセージは${maxLengthOfComment}文字以下で入力して下さい。")
+        }
         this.comment = comment
         this.isDeleted = isDeleted
         this.goodList = goodList
