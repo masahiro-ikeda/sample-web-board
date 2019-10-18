@@ -11,10 +11,7 @@ class MessageQueryImpl(private val mapper: MessageQueryMapper) : IMessageQuery {
         return mapper.selectAll()
     }
 
-    override fun fetchById(id: String?): MessageDto? {
-        if (null == id) {
-            return null
-        }
+    override fun fetchById(id: String): MessageDto? {
         return mapper.selectById(id)
     }
 

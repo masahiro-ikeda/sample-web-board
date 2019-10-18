@@ -3,16 +3,14 @@ package com.sample.board.application.implement
 import com.sample.board.application.IMessageService
 import com.sample.board.application.dto.PostMessageDto
 import com.sample.board.application.dto.PostReplyDto
-import com.sample.board.application.exception.MessageNotFoundException
-import com.sample.board.application.message.MessageResources
 import com.sample.board.domain.message.*
 import com.sample.board.query.IGoodQuery
 import com.sample.board.query.IMessageQuery
 import com.sample.board.query.dto.MessageDto
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.client.HttpClientErrorException
-import java.security.AccessControlException
 import java.util.*
 import java.util.stream.Collectors
 
@@ -39,19 +37,24 @@ class MessageService(
     @Transactional
     override fun postMessage(input: PostMessageDto) {
 
-        // 新規メッセージモデルの生成
-        val newMessage = Message(
-            UUID.randomUUID().toString(),
-            MessageType.MESSAGE,
-            messageQuery.fetchMaxPostNo() + 1,
-            0,
-            input.userId,
-            input.comment,
-            0,
-            mutableListOf<Good>()
-        )
-        // 永続化
-        repository.store(newMessage)
+        try {
+            // 新規メッセージモデルの生成
+            val newMessage = Message(
+                UUID.randomUUID().toString(),
+                MessageType.MESSAGE,
+                messageQuery.fetchMaxPostNo() + 1,
+                0,
+                input.userId,
+                input.comment,
+                0,
+                mutableListOf<Good>()
+            )
+            // 永続化
+            repository.store(newMessage)
+
+        } catch (e: IllegalArgumentException) {
+            throw HttpClientErrorException(HttpStatus.BAD_REQUEST, e.message!!)
+        }
     }
 
 
@@ -64,22 +67,27 @@ class MessageService(
     override fun postReply(input: PostReplyDto) {
 
         // 返信対象のメッセージ情報の取得
-        val replyTarget: MessageDto =
-            messageQuery.fetchById(input.messageId) ?: throw IllegalArgumentException("無効なメッセージです。")
+        val replyTarget: MessageDto = messageQuery.fetchById(input.messageId)
+            ?: throw HttpClientErrorException(HttpStatus.NOT_FOUND, "存在しないメッセージです。")
 
-        // 新規メッセージモデル（返信）の生成
-        val newReply = Message(
-            UUID.randomUUID().toString(),
-            MessageType.REPLY,
-            replyTarget.postNo,
-            messageQuery.fetchMaxReplyNo(replyTarget.postNo) + 1,
-            input.userId,
-            input.comment,
-            0,
-            mutableListOf()
-        )
-        // 永続化
-        repository.store(newReply)
+        try {
+            // 新規メッセージモデル（返信）の生成
+            val newReply = Message(
+                UUID.randomUUID().toString(),
+                MessageType.REPLY,
+                replyTarget.postNo,
+                messageQuery.fetchMaxReplyNo(replyTarget.postNo) + 1,
+                input.userId,
+                input.comment,
+                0,
+                mutableListOf()
+            )
+            // 永続化
+            repository.store(newReply)
+
+        } catch (e: IllegalArgumentException) {
+            throw HttpClientErrorException(HttpStatus.BAD_REQUEST, e.message!!)
+        }
     }
 
     /**
@@ -90,29 +98,26 @@ class MessageService(
     @Transactional
     override fun deleteMessage(messageId: String, loginUserId: String) {
 
-        // メッセージモデルの生成
-        val messageDto = messageQuery.fetchById(messageId)
-            ?: throw MessageNotFoundException("MessageId", messageId)
-        val goodList = goodQuery.fetchGoodById(messageId) ?: mutableListOf()
+        // 削除対象のメッセージ情報の取得
+        val deleteTarget: MessageDto = messageQuery.fetchById(messageId)
+            ?: throw HttpClientErrorException(HttpStatus.NOT_FOUND, "存在しないメッセージです。")
+        val targetGoodList = goodQuery.fetchGoodById(messageId) ?: mutableListOf()
 
         val message = Message(
-            messageDto.id,
-            messageDto.type,
-            messageDto.postNo,
-            messageDto.replyNo,
-            messageDto.userId,
-            messageDto.comment,
-            messageDto.isDeleted,
-            goodList
+            deleteTarget.id,
+            deleteTarget.type,
+            deleteTarget.postNo,
+            deleteTarget.replyNo,
+            deleteTarget.userId,
+            deleteTarget.comment,
+            deleteTarget.isDeleted,
+            targetGoodList
         )
 
-        // 他ユーザーのメッセージを削除していないか確認
-        if (message.userId != loginUserId) {
-            throw AccessControlException("")
+        // メッセージ削除処理
+        if (!message.delete(loginUserId)) {
+            throw throw HttpClientErrorException(HttpStatus.FORBIDDEN, "メッセージを削除する権限がありません。")
         }
-
-        // メッセージ削除
-        message.delete()
         // 永続化
         repository.store(message)
     }
@@ -130,7 +135,13 @@ class MessageService(
 
         // DTOからモデルに変換
         allMessage.forEach { dto ->
-            val goods = allGood.stream().filter { good -> dto.id.equals(good.messageId) }.collect(Collectors.toList())
+
+            // メッセージに紐づくいいねを抜き出す
+            val goods = allGood.stream().filter { good ->
+                (dto.id == good.messageId)
+            }.collect(Collectors.toList())
+
+            // 表示用メッセージモデルの生成
             val message = MessageForDisplay(
                 dto.id,
                 dto.type,
@@ -144,6 +155,7 @@ class MessageService(
                 dto.createdAt,
                 dto.updatedAt
             )
+
             messageForDisplayList.add(message)
         }
 

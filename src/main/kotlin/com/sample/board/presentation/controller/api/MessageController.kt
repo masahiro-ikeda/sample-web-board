@@ -43,7 +43,7 @@ class MessageController(
      */
     @PostMapping("{messageId}")
     fun postReply(
-        @PathVariable("messageId") messageId: String?,
+        @PathVariable("messageId") messageId: String,
         @RequestParam(value = "comment", required = false) comment: String?,
         @AuthenticationPrincipal loginUser: LoginUser
     ) {

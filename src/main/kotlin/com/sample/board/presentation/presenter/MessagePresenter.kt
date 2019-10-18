@@ -51,7 +51,7 @@ class MessagePresenter {
         builder.append(createGoodForm(message, loginUserId))
         builder.append("</td>")
         // 削除ボタン
-        if (message.userId == loginUserId) {
+        if (message.postUserId == loginUserId) {
             builder.append("<td>")
             builder.append(createDeleteForm(message))
             builder.append("</td>")
@@ -76,7 +76,7 @@ class MessagePresenter {
         builder.append(createGoodForm(reply, loginUserId))
         builder.append("</td>")
         // 削除ボタン
-        if (reply.userId == loginUserId) {
+        if (reply.postUserId == loginUserId) {
             builder.append("<td>")
             builder.append(createDeleteForm(reply))
             builder.append("</td>")

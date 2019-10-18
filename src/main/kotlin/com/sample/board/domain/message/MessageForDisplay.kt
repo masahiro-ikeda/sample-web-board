@@ -2,6 +2,9 @@ package com.sample.board.domain.message
 
 import java.time.LocalDateTime
 
+/**
+ * 表示用メッセージモデル
+ */
 class MessageForDisplay : Message {
     val userName: String
     val createdAt: LocalDateTime

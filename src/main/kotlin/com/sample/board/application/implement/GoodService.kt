@@ -3,15 +3,17 @@ package com.sample.board.application.implement
 import com.sample.board.application.IGoodService
 import com.sample.board.application.dto.PostGoodDto
 import com.sample.board.application.dto.RemoveGoodDto
-import com.sample.board.application.message.MessageResources
 import com.sample.board.domain.message.Good
 import com.sample.board.domain.message.IMessageRepository
 import com.sample.board.domain.message.Message
 import com.sample.board.query.IGoodQuery
 import com.sample.board.query.IMessageQuery
+import com.sample.board.query.dto.MessageDto
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
+import org.springframework.web.client.HttpClientErrorException
+import java.util.*
 
 /**
  * いいね！に関する操作を行う実装クラス
@@ -24,9 +26,7 @@ class GoodService(
     /** メッセージクエリ */
     private val messageQuery: IMessageQuery,
     /** いいねクエリ */
-    private val goodQuery: IGoodQuery,
-    /** メッセージ内容の取得元 */
-    private val errorMessage: MessageResources
+    private val goodQuery: IGoodQuery
 
 ) : IGoodService {
 
@@ -38,25 +38,34 @@ class GoodService(
     @Transactional
     override fun postGood(dto: PostGoodDto) {
 
-        // メッセージモデルの生成
-        val messageDto = messageQuery.fetchById(dto.messageId)
-            ?: throw IllegalArgumentException(errorMessage.get("error.application.message.notExist"))
-        val goodList = goodQuery.fetchGoodById(dto.messageId) ?: mutableListOf()
+        // いいね対象のメッセージ情報の取得
+        val goodTarget: MessageDto = messageQuery.fetchById(dto.messageId)
+            ?: throw HttpClientErrorException(HttpStatus.NOT_FOUND, "存在しないメッセージです。")
+        val targetGoodList = goodQuery.fetchGoodById(dto.messageId) ?: mutableListOf()
+
         val message = Message(
-            messageDto.id,
-            messageDto.type.name,
-            messageDto.postNo,
-            messageDto.replyNo,
-            messageDto.userId,
-            messageDto.comment,
-            messageDto.isDeleted,
-            goodList
+            goodTarget.id,
+            goodTarget.type,
+            goodTarget.postNo,
+            goodTarget.replyNo,
+            goodTarget.userId,
+            goodTarget.comment,
+            goodTarget.isDeleted,
+            targetGoodList
+        )
+
+        val newGood = Good(
+            UUID.randomUUID().toString(),
+            dto.messageId,
+            dto.userId,
+            0
         )
 
         // いいねの登録
-        message.addGood(
-            Good(UUID.randomUUID().toString(), dto.messageId, dto.userId, 0)
-        )
+        if (!message.addGood(newGood)) {
+            throw HttpClientErrorException(HttpStatus.BAD_REQUEST, "同一メッセージに付与できるいいねは1回のみです。")
+        }
+
         // 永続化
         repository.store(message)
     }
@@ -69,23 +78,26 @@ class GoodService(
     @Transactional
     override fun removeGood(dto: RemoveGoodDto) {
 
-        // メッセージモデルの生成
-        val messageDto = messageQuery.fetchById(dto.messageId)
-            ?: throw IllegalArgumentException(errorMessage.get("error.application.message.notExist"))
-        val goodList = goodQuery.fetchGoodById(dto.messageId) ?: mutableListOf()
+        // 取消対象いいねのメッセージ情報の取得
+        val goodTarget: MessageDto = messageQuery.fetchById(dto.messageId)
+            ?: throw HttpClientErrorException(HttpStatus.NOT_FOUND, "存在しないメッセージです。")
+        val targetGoodList = goodQuery.fetchGoodById(dto.messageId) ?: mutableListOf()
+
         val message = Message(
-            messageDto.id,
-            messageDto.type.name,
-            messageDto.postNo,
-            messageDto.replyNo,
-            messageDto.userId,
-            messageDto.comment,
-            messageDto.isDeleted,
-            goodList
+            goodTarget.id,
+            goodTarget.type,
+            goodTarget.postNo,
+            goodTarget.replyNo,
+            goodTarget.userId,
+            goodTarget.comment,
+            goodTarget.isDeleted,
+            targetGoodList
         )
 
         // いいねのキャンセル
-        message.removeGood(dto.userId)
+        if (!message.removeGood(dto.userId)) {
+            throw HttpClientErrorException(HttpStatus.BAD_REQUEST, "いいねが存在しません。")
+        }
         // 永続化
         repository.store(message)
     }

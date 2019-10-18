@@ -18,11 +18,9 @@ class GoodController(
 
     @PostMapping
     fun postGood(
-        @PathVariable("messageId") messageId: String?,
+        @PathVariable("messageId") messageId: String,
         @AuthenticationPrincipal loginUser: LoginUser
     ) {
-        if (messageId.isNullOrEmpty()) throw IllegalArgumentException()
-
         val dto = PostGoodDto(messageId, loginUser.username)
         service.postGood(dto)
     }
