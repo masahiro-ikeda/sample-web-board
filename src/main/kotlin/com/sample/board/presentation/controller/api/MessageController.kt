@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*
 class MessageController(
     val service: IMessageService,
     val presenter: MessagePresenter
-) {
+) : ApiErrorHandler() {
 
     /**
      * メッセージの投稿を行う

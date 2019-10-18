@@ -70,7 +70,7 @@ class AppErrorController : ErrorController {
     @RequestMapping(value = ["error/500"])
     fun status500(request: HttpServletRequest, response: HttpServletResponse): String {
         response.status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR
-        return "500"
+        return "error/500"
     }
 
     /**
@@ -79,7 +79,7 @@ class AppErrorController : ErrorController {
     @RequestMapping(value = ["error/400"])
     fun status400(request: HttpServletRequest, response: HttpServletResponse): String {
         response.status = HttpServletResponse.SC_BAD_REQUEST
-        return "400"
+        return "error/400"
     }
 
     /**
@@ -89,7 +89,7 @@ class AppErrorController : ErrorController {
     fun status403(request: HttpServletRequest, response: HttpServletResponse): String {
         response.status = HttpServletResponse.SC_FORBIDDEN
         // 403エラーは404画面と同じ
-        return "403"
+        return "error/403"
     }
 
     /**
@@ -98,6 +98,6 @@ class AppErrorController : ErrorController {
     @RequestMapping(value = ["error/404"])
     fun status404(request: HttpServletRequest, response: HttpServletResponse): String {
         response.status = HttpServletResponse.SC_NOT_FOUND
-        return "404"
+        return "error/404"
     }
 }
