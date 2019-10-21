@@ -1,6 +1,6 @@
 version: '3'
 services:
-  db:
+  mysql:
     build: ./mysql/  # 左記フォルダの以下のDockerfileを利用
     ports:
       - "3306:3306" # ポートを開ける
@@ -8,6 +8,6 @@ services:
   app:
     build: ./app/
     depends_on:
-      - db
+      - mysql
     ports:
       - "8080:8080"

@@ -11,7 +11,7 @@ VOLUME /data
 RUN mkdir /app
 
 # jarファイルをコピー
-ADD ./app.jar app/app.jar
+ADD ../../build/libs/sample-web-board-1.0-SNAPSHOT.jar app/app.jar
 
 # docker runに実行される
 CMD ["java", "-jar", "app/app.jar"]
