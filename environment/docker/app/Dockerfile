@@ -1,17 +1,16 @@
+# 未使用
+
 # 使うDockerイメージ
 FROM openjdk:11
 
 # ポートを開ける
 EXPOSE 8080
 
-# マウントしてデータを永続化
-VOLUME /data
-
 # 起動用ディレクトリを作成
-RUN mkdir /app
+RUN mkdir /application
 
 # jarファイルをコピー
-ADD ../../build/libs/sample-web-board-1.0-SNAPSHOT.jar app/app.jar
+ADD ./sample-web-board.jar /application/sample-web-board.jar
 
 # docker runに実行される
-CMD ["java", "-jar", "app/app.jar"]
+CMD ["java", "-jar", "/application/sample-web-board.jar"]
