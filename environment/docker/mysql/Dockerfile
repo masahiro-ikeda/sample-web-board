@@ -11,4 +11,4 @@ ADD ./init/create.sql /docker-entrypoint-initdb.d/create.sql
 VOLUME /data
 
 # docker run時に実行されるコマンド
-# CMD ["mysqld"]
+CMD ["mysqld"]

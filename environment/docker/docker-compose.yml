@@ -10,7 +10,6 @@ services:
       - MYSQL_USER=dev-user
       - MYSQL_PASSWORD=dev-pass
       - MYSQL_DATABASE=develop
-    command: mysqld
 
   app:
     image: openjdk:11
