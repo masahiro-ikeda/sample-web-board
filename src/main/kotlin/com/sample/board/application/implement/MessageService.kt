@@ -7,6 +7,7 @@ import com.sample.board.domain.message.*
 import com.sample.board.query.IGoodQuery
 import com.sample.board.query.IMessageQuery
 import com.sample.board.query.dto.MessageDto
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -29,6 +30,9 @@ class MessageService(
 
 ) : IMessageService {
 
+    // ロガー
+    private val logger = LoggerFactory.getLogger(MessageService::class.java)
+
     /**
      * メッセージの新規投稿
      *
@@ -36,6 +40,8 @@ class MessageService(
      */
     @Transactional
     override fun postMessage(input: PostMessageDto) {
+
+        logger.info("start: postMessage")
 
         try {
             // 新規メッセージモデルの生成
@@ -53,8 +59,13 @@ class MessageService(
             repository.store(newMessage)
 
         } catch (e: IllegalArgumentException) {
+            logger.error(e.message!!)
             throw HttpClientErrorException(HttpStatus.BAD_REQUEST, e.message!!)
+        } catch (e: Exception) {
+            logger.error(e.message!!)
         }
+
+        logger.info("finish: postMessage")
     }
 
 
@@ -116,7 +127,7 @@ class MessageService(
 
         // メッセージ削除処理
         if (!message.delete(loginUserId)) {
-            throw throw HttpClientErrorException(HttpStatus.FORBIDDEN, "メッセージを削除する権限がありません。")
+            throw HttpClientErrorException(HttpStatus.FORBIDDEN, "メッセージを削除する権限がありません。")
         }
         // 永続化
         repository.store(message)

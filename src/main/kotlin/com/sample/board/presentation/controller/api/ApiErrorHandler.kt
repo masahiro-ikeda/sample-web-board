@@ -41,7 +41,7 @@ open class ApiErrorHandler {
         return ResponseEntity<ApiResponseBody>(
             ApiResponseBody(
                 LocalDateTime.now(),
-                "通信エラーが発生しました。しばらく時間をおいた後に再送信して下さい。"
+                "技術的な問題が発生しています。しばらく時間をおいた後に再送信して下さい。"
             ), HttpStatus.INTERNAL_SERVER_ERROR
         )
     }

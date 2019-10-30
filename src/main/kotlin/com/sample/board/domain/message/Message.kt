@@ -46,7 +46,7 @@ open class Message {
         messageType: MessageType,
         postNo: Int,
         replyNo: Int,
-        postUserId: String,
+        userId: String,
         comment: String?,
         isDeleted: Int,
         goodList: MutableList<Good>
@@ -55,7 +55,7 @@ open class Message {
         this.messageType = messageType
         this.postNo = postNo
         this.replyNo = replyNo
-        this.postUserId = postUserId
+        this.postUserId = userId
         // 投稿メッセージの入力チェック
         if (comment.isNullOrBlank()) {
             throw IllegalArgumentException("メッセージを入力して下さい。")

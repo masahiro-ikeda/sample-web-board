@@ -26,7 +26,7 @@ interface MessageMapper {
           #{messageType},
           #{postNo},
           #{replyNo},
-          #{userId},
+          #{postUserId},
           #{comment},
           #{isDeleted},
           NOW(),

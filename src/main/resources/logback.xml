@@ -1,0 +1,33 @@
+<configuration>
+  <property name="encoding" value="UTF-8"/>
+  <property name="logPath" value="application/logs/" />
+  <property name="logFormat" value="%date [%thread] [%-5level] %logger{50} = %message%n"/>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <pattern>${logFormat}</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${logPath}app.log</file>
+
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${logPath}app.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <maxHistory>30</maxHistory>
+    </rollingPolicy>
+
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <charset>${encoding}</charset>
+      <pattern>${logFormat}</pattern>
+      <outputPatternAsHeader>true</outputPatternAsHeader>
+    </encoder>
+  </appender>
+
+  <logger name="com.sample.board" level="DEBUG"/>
+
+  <root level="INFO">
+    <appender-ref ref="STDOUT"/>
+    <appender-ref ref="FILE"/>
+  </root>
+</configuration>

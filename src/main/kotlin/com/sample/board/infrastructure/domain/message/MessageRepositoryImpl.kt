@@ -21,19 +21,18 @@ class MessageRepositoryImpl(
             messageMapper.delete(message.id)
         }
 
-        val savedList = goodMapper.selectByMessageId(message.id)
-        val newerList = message.getGoodList()
+        val oldGoods = goodMapper.selectByMessageId(message.id)
+        val newGoods = message.getGoodList()
 
         // いいねの追加を反映
-        newerList.stream().filter { newer ->
-            !savedList.stream().anyMatch { saved -> newer.id.equals(saved.id) }
+        newGoods.stream().filter {
+            !oldGoods.stream().anyMatch { older -> it.id.equals(older.id) }
+        }.forEach { newer ->
+            goodMapper.insert(newer)
         }
-            .forEach {
-                goodMapper.insert(it)
-            }
 
         // いいねの削除
-        newerList.forEach {
+        newGoods.forEach {
             if (it.isDeleted()) goodMapper.delete(it.id)
         }
     }

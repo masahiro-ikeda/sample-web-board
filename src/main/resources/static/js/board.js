@@ -12,7 +12,8 @@ function loadMessages(){
   })
   // リクエスト失敗時
   .fail( (data) => {
-    alert(data);
+    obj = JSON.parse(data);
+    alert(data.message);
   })
 }
 
@@ -22,8 +23,7 @@ function postMessage(){
     type :'POST',
     data :{
       '_csrf'   : $.cookie('XSRF-TOKEN'),
-      'type'    : 'MESSAGE',
-      'comment' : $('#message [name=comment]').val()
+      '_comment' : $('#message [name=comment]').val()
     }
   })
   // リクエスト成功時
@@ -33,7 +33,8 @@ function postMessage(){
   })
   // リクエスト失敗時
   .fail( (data) => {
-    alert(data);
+    response = JSON.parse(data);
+    alert(response.message);
   })
 }
 

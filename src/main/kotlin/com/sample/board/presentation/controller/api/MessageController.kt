@@ -25,7 +25,7 @@ class MessageController(
      */
     @PostMapping
     fun postMessage(
-        @RequestParam(value = "comment", required = false) comment: String?,
+        @RequestParam(value = "_comment", required = false) comment: String?,
         @AuthenticationPrincipal loginUser: LoginUser
     ) {
         val dto = PostMessageDto(
