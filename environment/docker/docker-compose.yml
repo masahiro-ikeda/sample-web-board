@@ -1,15 +1,9 @@
 version: '3'
 
+networks:
+  sample-web-board:
+
 services:
-  mysql:
-    build: ./mysql/  # Dockerfileを利用
-    ports:
-      - "13306:3306" # ポートを開ける
-    environment:
-      - MYSQL_ROOT_PASSWORD=pass
-      - MYSQL_USER=dev-user
-      - MYSQL_PASSWORD=dev-pass
-      - MYSQL_DATABASE=develop
 
   app:
     image: openjdk:11
@@ -19,4 +13,18 @@ services:
       - "18080:8080"
     volumes:
       - ../../build/libs:/application # ローカルの/build/libsをマウント
-    command: java -jar application/sample-web-board.jar
+    networks:
+      - sample-web-board
+    command: java -Djava.security.egd=file:/dev/./urandom -jar application/sample-web-board.jar
+
+  mysql:
+    build: ./mysql/  # Dockerfileを利用
+    ports:
+      - "13306:3306" # ポートを開ける
+    environment:
+      - MYSQL_ROOT_PASSWORD=pass
+      - MYSQL_USER=dev-user
+      - MYSQL_PASSWORD=dev-pass
+      - MYSQL_DATABASE=develop
+    networks:
+      - sample-web-board
