@@ -1,0 +1,23 @@
+spring:
+  # SESSION
+  session: store-type=none
+
+  # DATA SOURCE
+  datasource.driver-class-name: com.mysql.jdbc.Driver
+  datasource.url: jdbc:mysql://db/develop?useSSL=true
+  datasource.username: dev-user
+  datasource.password: dev-pass
+
+  # THYMELEAF
+  thymeleaf.cache: false
+  thymeleaf.mode: HTML
+  thymeleaf.prefix: classpath:/templates/
+
+# MyBatis
+mybatis:
+  configuration:
+    mapUnderscoreToCamelCase: true
+
+# Logbackの設定ファイルの指定
+logging:
+  config: classpath:logback-webboard.xml

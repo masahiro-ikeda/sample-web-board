@@ -1,30 +1,36 @@
 version: '3'
 
-networks:
-  sample-web-board:
-
 services:
+  web:
+    image: nginx
+    depends_on:
+      - app
+    volumes:
+      - ./web/etc/nginx/conf.d/server.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
 
   app:
-    image: openjdk:11
+    build: ./app
     depends_on:
-      - mysql
-    ports:
-      - "18080:8080"
+      - db
+    environment:
+      - TZ=Asia/Tokyo
     volumes:
-      - ../../build/libs:/application # ローカルの/build/libsをマウント
-    networks:
-      - sample-web-board
+      - ../../build/libs:/application
     command: java -Djava.security.egd=file:/dev/./urandom -jar application/sample-web-board.jar
 
-  mysql:
-    build: ./mysql/  # Dockerfileを利用
-    ports:
-      - "13306:3306" # ポートを開ける
+  db:
+    image: mysql:5.7
     environment:
       - MYSQL_ROOT_PASSWORD=pass
       - MYSQL_USER=dev-user
       - MYSQL_PASSWORD=dev-pass
       - MYSQL_DATABASE=develop
-    networks:
-      - sample-web-board
+      - TZ=Asia/Tokyo
+    volumes:
+      - ./db/data:/var/lib/mysql
+      - ./db/etc/mysql/conf.d/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./db/init:/docker-entrypoint-initdb.d
+    ports:
+      - "13306:3306"
