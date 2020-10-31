@@ -3,15 +3,17 @@ spring:
   session: store-type=none
 
   # DATA SOURCE
-  datasource.driver-class-name: com.mysql.jdbc.Driver
-  datasource.url: jdbc:mysql://db/develop?useSSL=true
-  datasource.username: dev-user
-  datasource.password: dev-pass
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://db:3306/develop
+    username: dev-user
+    password: dev-pass
 
   # THYMELEAF
-  thymeleaf.cache: false
-  thymeleaf.mode: HTML
-  thymeleaf.prefix: classpath:/templates/
+  thymeleaf:
+    cache: false
+    mode: HTML
+    prefix: classpath:/templates/
 
 # MyBatis
 mybatis:

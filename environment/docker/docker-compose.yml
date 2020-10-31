@@ -17,8 +17,8 @@ services:
     environment:
       - TZ=Asia/Tokyo
     volumes:
-      - ../../build/libs:/application
-    command: java -Djava.security.egd=file:/dev/./urandom -jar application/sample-web-board.jar
+      - ../../build/libs:/web
+    command: java -Djava.security.egd=file:/dev/./urandom -jar web/sample-web-board.jar
 
   db:
     image: mysql:5.7
