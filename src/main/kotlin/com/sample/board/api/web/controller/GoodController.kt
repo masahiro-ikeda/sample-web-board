@@ -18,19 +18,21 @@ class GoodController(
 
     @PostMapping
     fun postGood(
-        @PathVariable("messageId") messageId: String,
+        @PathVariable("messageId") messageId: Int?,
         @AuthenticationPrincipal loginUser: LoginUser
     ) {
+        if (messageId == null) throw IllegalArgumentException()
+
         val dto = PostGoodDto(messageId, loginUser.username)
         service.postGood(dto)
     }
 
     @DeleteMapping
     fun deleteGood(
-        @PathVariable("messageId") messageId: String?,
+        @PathVariable("messageId") messageId: Int?,
         @AuthenticationPrincipal loginUser: LoginUser
     ) {
-        if (messageId.isNullOrEmpty()) throw IllegalArgumentException()
+        if (messageId == null) throw IllegalArgumentException()
 
         val dto = RemoveGoodDto(messageId, loginUser.username)
         service.removeGood(dto)

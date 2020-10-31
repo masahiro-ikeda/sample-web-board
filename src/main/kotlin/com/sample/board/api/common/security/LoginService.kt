@@ -1,6 +1,6 @@
 package com.sample.board.api.common.security
 
-import com.sample.board.api.domain.query.IUserQuery
+import com.sample.board.api.domain.repository.IUserRepository
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class LoginService(
-    private val query: IUserQuery
+    private val repository: IUserRepository
 ) : UserDetailsService {
 
     override fun loadUserByUsername(userId: String?): UserDetails {
@@ -19,7 +19,7 @@ class LoginService(
         }
 
         // ユーザが存在しない
-        val user = query.findById(userId)
+        val user = repository.findById(userId)
         if (user == null){
             throw UsernameNotFoundException("error.login.user.notExist")
         }

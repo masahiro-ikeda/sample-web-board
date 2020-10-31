@@ -9,58 +9,71 @@ import kotlin.streams.toList
 class Message {
 
     /* メッセージID */
-    val id: String
+    private val id: Int?
+
     /* メッセージ種別 */
-    val messageType: MessageType
-    /* 投稿No */
-    val postNo: Int
-    /* 返信No */
-    val replyNo: Int
+    private val messageType: MessageType
+
+    /* 返信先 */
+    private val replyTo: Int?
+
     /* 投稿ユーザID */
-    val userId: String
+    private val userId: String
+
     /* コメント */
-    val comment: String?
+    private val comment: String
+
     /* 削除フラグ */
     private var isDeleted: Int
+
     /* いいね一覧 */
     private var goodList: MutableList<Good>
 
-    // 定数設定
+    // 定数
     companion object {
         const val MAX_LENGTH_OF_COMMENT: Int = 100
     }
 
     /**
-     * 新規作成時のコンストラクタ.
-     *
-     * @param id
-     * @param messageType
-     * @param postNo
-     * @param replyNo
-     * @param userId
-     * @param comment
-     * @param isDeleted
-     * @param goodList
+     * 新規作成時.
      */
     constructor(
-        id: String,
         messageType: MessageType,
-        postNo: Int,
-        replyNo: Int,
+        replyTo: Int?,
         userId: String,
-        comment: String?,
+        comment: String
+    ) {
+        if (comment.length > MAX_LENGTH_OF_COMMENT) {
+            throw BusinessError("メッセージは${MAX_LENGTH_OF_COMMENT}文字以下で入力して下さい。")
+        }
+        this.id = null
+        this.messageType = messageType
+        if (this.messageType.equals(MessageType.REPLY)) {
+            this.replyTo = replyTo ?: throw BusinessError("返信先が指定されていません。")
+        } else {
+            this.replyTo = replyTo
+        }
+        this.userId = userId
+        this.comment = comment
+        this.isDeleted = 0
+        this.goodList = mutableListOf()
+    }
+
+    /**
+     * 読み込み時.
+     */
+    constructor(
+        id: Int,
+        messageType: String,
+        replyTo: Int?,
+        userId: String,
+        comment: String,
         isDeleted: Int,
         goodList: MutableList<Good>
     ) {
-        // コメントの字数チェック
-        if (comment != null && comment.length > MAX_LENGTH_OF_COMMENT) {
-            throw BusinessError("メッセージは${MAX_LENGTH_OF_COMMENT}文字以下で入力して下さい。")
-        }
-
         this.id = id
-        this.messageType = messageType
-        this.postNo = postNo
-        this.replyNo = replyNo
+        this.messageType = MessageType.valueOf(messageType)
+        this.replyTo = replyTo
         this.userId = userId
         this.comment = comment
         this.isDeleted = isDeleted
@@ -71,20 +84,17 @@ class Message {
      * 投稿メッセージの削除
      *
      * @param loginUserId ログイン中のユーザID
-     *
-     * @return 削除処理の結果
      */
-    fun delete(loginUserId: String): Boolean {
+    fun delete(loginUserId: String) {
 
         // ユーザは自分の投稿しか削除できない
         if (this.userId != loginUserId) {
-            return false
+            throw BusinessError("メッセージが存在しません。")
         }
 
         // 削除実施
         this.isDeleted = 1
         goodList.forEach { it.delete() }
-        return true
     }
 
     /**
@@ -94,68 +104,72 @@ class Message {
      *
      * @return いいね付与結果
      */
-    fun addGood(newGood: Good): Boolean {
+    fun addGood(good: Good) {
 
         // 同一ユーザーは2回いいねできない
         if (goodList.stream()
-                .filter({ newGood.userId.equals(it.userId) })
+                .filter({ good.getUserId() == it.getUserId() })
                 .toList()
                 .isNotEmpty()
         ) {
-            return false
+            throw BusinessError("いいねが押せるのは1回だけです。")
         }
 
-        goodList.add(newGood)
-        return true
+        goodList.add(good)
     }
 
     /**
      * いいね取り消し
      *
-     * @param targetUserId いいねを取り消すユーザーID
+     * @param userId いいねを取り消すユーザーID
      *
      * @return いいね取り消し結果
      */
-    fun removeGood(targetUserId: String): Boolean {
+    fun removeGood(userId: String) {
 
-        // 取り消し対象のいいねが存在しない
+        // いいねの存在チェック
         if (goodList.stream()
-                .filter({ good -> targetUserId.equals(good.userId) })
+                .filter({ good -> userId.equals(good.getUserId()) })
                 .toList()
                 .isEmpty()
         ) {
-            return false
+            throw BusinessError("いいねがありません。")
         }
 
-        // いいねの削除実施
-        goodList.stream().filter { good ->
-            targetUserId.equals(good.userId)
-        }.forEach { removeTarget ->
-            removeTarget.delete()
+        // 削除
+        goodList.stream().forEach { good ->
+            if (userId.equals(good.getUserId())) {
+                good.delete()
+            }
         }
-        return true
-    }
-
-    fun getGoodList(): List<Good> {
-        return goodList
-    }
-
-    fun getNumberOfGood(): Int {
-        return goodList.count()
-    }
-
-    fun isAlreadyGood(userId: String): Boolean {
-        return !goodList.stream()
-            .filter({ userId.equals(it.userId) })
-            .toList()
-            .isEmpty()
-    }
-
-    fun isReply(): Boolean {
-        return this.messageType.equals(MessageType.REPLY)
     }
 
     fun isDeleted(): Boolean {
         return this.isDeleted == 1
+    }
+
+    // 以下、Getter
+    fun getId(): Int? {
+        return this.id
+    }
+
+    fun getMessageType(): MessageType {
+        return this.messageType
+    }
+
+    fun getReplyTo(): Int? {
+        return this.replyTo
+    }
+
+    fun getUserId(): String {
+        return this.userId
+    }
+
+    fun getComment(): String {
+        return this.comment
+    }
+
+    fun getGoods(): List<Good> {
+        return this.goodList
     }
 }

@@ -41,9 +41,9 @@ class MessageController(
      * @param messageId 返信対象のメッセージID
      * @param comment コメント
      */
-    @PostMapping("{messageId}")
+    @PostMapping("reply")
     fun postReply(
-        @PathVariable("messageId") messageId: String,
+        @RequestParam(value = "messageId", required = true) messageId: Int,
         @RequestParam(value = "comment", required = false) comment: String?,
         @AuthenticationPrincipal loginUser: LoginUser
     ) {
@@ -63,10 +63,10 @@ class MessageController(
      */
     @DeleteMapping("{messageId}")
     fun deleteMessage(
-        @PathVariable("messageId") messageId: String?,
+        @PathVariable("messageId") messageId: Int?,
         @AuthenticationPrincipal loginUser: LoginUser
     ) {
-        if (messageId.isNullOrEmpty()) throw IllegalArgumentException()
+        if (messageId == null) throw IllegalArgumentException()
         service.deleteMessage(messageId, loginUser.username)
     }
 

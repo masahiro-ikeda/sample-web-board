@@ -5,15 +5,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 class User {
     /* ユーザーID */
-    val id: String
+    private val id: String
     /* パスワード */
-    var password: String
+    private var password: String
     /* ユーザー名 */
-    var name: String
+    private var name: String
     /* 権限 */
-    var role: UserRole
+    private var role: UserRole
     /* 有効フラグ */
-    var isInvalid: Int
+    private var isInvalid: Int
 
     // 定数
     companion object {
@@ -28,7 +28,7 @@ class User {
     /**
      * 新規登録時のコンストラクタ
      */
-    constructor(id: String, password: String, name: String, role: String) {
+    constructor(id: String, password: String, name: String, role: UserRole) {
 
         if (id.length > MAX_LENGTH_USER_ID) {
             throw BusinessError("ユーザーIDは${MAX_LENGTH_USER_ID}文字まで登録できます。")
@@ -43,7 +43,7 @@ class User {
         this.id = id
         this.password = BCryptPasswordEncoder().encode(password)
         this.name = name
-        this.role = UserRole.valueOf(role)
+        this.role = role
         this.isInvalid = 0
     }
 
@@ -84,5 +84,29 @@ class User {
      */
     fun withdraw() {
         this.isInvalid = 1
+    }
+
+    /**
+     * 有効なユーザーか？
+     */
+    fun isInvalid(): Boolean{
+        return this.isInvalid == 1
+    }
+
+    // 以下、Getter
+    fun getId(): String {
+        return this.id
+    }
+
+    fun getPassword(): String {
+        return this.password
+    }
+
+    fun getName(): String {
+        return this.name
+    }
+
+    fun getRole(): UserRole {
+        return this.role
     }
 }

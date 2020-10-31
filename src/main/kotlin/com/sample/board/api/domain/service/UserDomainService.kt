@@ -1,10 +1,13 @@
 package com.sample.board.api.domain.service
 
 import com.sample.board.api.domain.entity.user.User
-import com.sample.board.api.domain.query.IUserQuery
+import com.sample.board.api.domain.repository.IUserRepository
+import com.sample.board.api.domain.repository.dto.UserDto
+import org.springframework.stereotype.Component
 
+@Component
 class UserDomainService(
-    private val userQuery: IUserQuery
+    private val userRepository: IUserRepository
 ) {
 
     /**
@@ -12,7 +15,7 @@ class UserDomainService(
      */
     fun isExist(user: User): Boolean {
 
-        val duplicatedUser: User? = userQuery.findById(user.id);
+        val duplicatedUser: UserDto? = userRepository.findById(user.getId())
         return duplicatedUser != null
     }
 }

@@ -1,11 +1,14 @@
 package com.sample.board.api.common.security
 
-import com.sample.board.api.domain.entity.user.User
+import com.sample.board.api.domain.entity.user.UserRole
+import com.sample.board.api.domain.repository.dto.UserDto
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
-class LoginUser(private val user: User) : UserDetails {
+class LoginUser(
+    private val user: UserDto
+) : UserDetails {
 
     override fun getPassword(): String {
         return user.password
@@ -32,8 +35,8 @@ class LoginUser(private val user: User) : UserDetails {
     }
 
     override fun getAuthorities(): Collection<GrantedAuthority> {
-        var authorities: MutableList<GrantedAuthority> = mutableListOf()
-        authorities.add(SimpleGrantedAuthority(user.role.name))
+        val authorities: MutableList<GrantedAuthority> = mutableListOf()
+        authorities.add(SimpleGrantedAuthority(user.role))
         return authorities
     }
 }

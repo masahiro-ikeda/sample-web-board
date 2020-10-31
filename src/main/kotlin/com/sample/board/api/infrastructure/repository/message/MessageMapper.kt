@@ -1,6 +1,7 @@
 package com.sample.board.api.infrastructure.repository.message
 
 import com.sample.board.api.domain.entity.message.Message
+import com.sample.board.api.domain.repository.dto.MessageDto
 import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Select
@@ -9,13 +10,50 @@ import org.apache.ibatis.annotations.Update
 @Mapper
 interface MessageMapper {
 
+    @Select(
+        """
+        SELECT
+          id,
+          type,
+          reply_to,
+          user_id,
+          comment,
+          is_deleted,
+          created_at,
+          updated_at
+        FROM
+          messages
+        WHERE
+          id = #{id}
+        """
+    )
+    fun selectById(id: Int): MessageDto?
+
+    @Select(
+        """
+        SELECT
+          id,
+          type,
+          reply_to,
+          user_id,
+          comment,
+          is_deleted,
+          created_at,
+          updated_at
+        FROM
+          messages
+        ORDER BY
+          id
+        """
+    )
+    fun selectAll(): List<MessageDto>?
+
     @Insert(
         """
         INSERT INTO messages (
           id,
           type,
-          post_no,
-          reply_no,
+          reply_to,
           user_id,
           comment,
           is_deleted,
@@ -24,9 +62,8 @@ interface MessageMapper {
         ) VALUES (
           #{id},
           #{messageType},
-          #{postNo},
-          #{replyNo},
-          #{postUserId},
+          #{replyTo},
+          #{userId},
           #{comment},
           #{isDeleted},
           NOW(),
@@ -36,29 +73,18 @@ interface MessageMapper {
     )
     fun insert(message: Message)
 
-    @Select(
-        """
-        SELECT
-          id
-        FROM
-          messages
-        WHERE
-          id = #{id} AND
-          is_deleted = 0
-        """
-    )
-    fun selectById(id: String): String
-
     @Update(
         """
-        UPDATE 
-          messages
-        SET
-          is_deleted = 1,
+        UPDATE messages SET
+          type       = #{messageType},
+          reply_to   = #{replyTo},
+          user_id    = #{userId},
+          comment    = #{comment},
+          is_deleted = #{isDeleted},
           updated_at = NOW()
         WHERE
           id = #{id}
         """
     )
-    fun delete(id: String)
+    fun update(message: Message)
 }

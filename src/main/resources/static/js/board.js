@@ -40,12 +40,12 @@ function postMessage(){
 
 function postReply(targetFrom){
   $.ajax({
-    url  :'api/message',
+    url  :'api/message/reply',
     type :'POST',
     data :{
       '_csrf'   : $.cookie('XSRF-TOKEN'),
       'type'    : 'REPLY',
-      'postNo'  : $('#' + targetFrom + ' [name=postNo]').val(),
+      'messageId'  : $('#' + targetFrom + ' [name=messageId]').val(),
       'comment' : $('#' + targetFrom + ' [name=comment]').val()
     }
   })

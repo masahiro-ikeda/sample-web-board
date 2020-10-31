@@ -17,14 +17,15 @@ class MessagePresenter {
         val builder = StringBuilder()
 
         messages.stream().filter {
-            it.message.messageType == MessageType.MESSAGE
+            it.messageType == MessageType.MESSAGE
         }.forEach { message ->
             // メッセージを描画
             builder.append(formatMessage(message, loginUserId))
 
             // 返信を描画
             messages.stream().filter {
-                it.message.isReply() && it.message.postNo == message.message.postNo
+                it.messageType == MessageType.REPLY
+                && it.replyTo == message.messageId
             }.forEach { reply ->
                 builder.append(formatReply(reply, loginUserId))
             }
@@ -50,7 +51,7 @@ class MessagePresenter {
         builder.append(createGoodForm(message, loginUserId))
         builder.append("</td>")
         // 削除ボタン
-        if (message.message.userId == loginUserId) {
+        if (message.userId == loginUserId) {
             builder.append("<td>")
             builder.append(createDeleteForm(message))
             builder.append("</td>")
@@ -75,7 +76,7 @@ class MessagePresenter {
         builder.append(createGoodForm(reply, loginUserId))
         builder.append("</td>")
         // 削除ボタン
-        if (reply.message.userId == loginUserId) {
+        if (reply.userId == loginUserId) {
             builder.append("<td>")
             builder.append(createDeleteForm(reply))
             builder.append("</td>")
@@ -89,14 +90,14 @@ class MessagePresenter {
     private fun createMessageBody(body: MessageForDisplay): String {
         val builder = StringBuilder()
         builder.append("<p>")
-        builder.append("投稿No: ${body.message.postNo}")
+        builder.append("投稿No: ${body.messageId}")
         builder.append(SEPARATOR)
         builder.append("投稿者: ${body.userName}")
         builder.append(SEPARATOR)
-        builder.append("投稿時間: ${body.createdAt.format(FORMATTER)}")
+        builder.append("投稿時間: ${body.updatedAt.format(FORMATTER)}")
         builder.append("</p>")
         builder.append("</br>")
-        builder.append("<p>${formatText(body.message.comment!!)}</p>")
+        builder.append("<p>${formatText(body.comment)}</p>")
         builder.append("</br>")
         return builder.toString()
     }
@@ -104,26 +105,26 @@ class MessagePresenter {
     private fun createReplyBody(body: MessageForDisplay): String {
         val builder = StringBuilder()
         builder.append("<p>")
-        builder.append("返信No: ${body.message.replyNo}")
+        builder.append("返信No: ${body.messageId}")
         builder.append(SEPARATOR)
         builder.append("投稿者: ${body.userName}")
         builder.append(SEPARATOR)
-        builder.append("投稿時間: ${body.createdAt.format(FORMATTER)}")
+        builder.append("投稿時間: ${body.updatedAt.format(FORMATTER)}")
         builder.append("</p>")
         builder.append("</br>")
-        builder.append("<p>${formatText(body.message.comment!!)}</p>")
+        builder.append("<p>${formatText(body.comment)}</p>")
         builder.append("</br>")
         return builder.toString()
     }
 
     private fun createGoodForm(target: MessageForDisplay, loginUserId: String): String {
         val builder = StringBuilder()
-        builder.append("<form id=\"goodTo${target.message.id}\">")
-        if (target.message.isAlreadyGood(loginUserId)) {
+        builder.append("<form id=\"goodTo${target.messageId}\">")
+        if (target.goods.filter { good -> good.getUserId().equals(loginUserId) }.isNotEmpty()) {
             // いいね済みの場合は削除フォームを生成
-            builder.append("<input type=\"button\" value=\"${target.message.getNumberOfGood()} いいね\" onclick=\"deleteGood('${target.message.id}')\"/>")
+            builder.append("<input type=\"button\" value=\"${target.goods.size} いいね\" onclick=\"deleteGood('${target.messageId}')\"/>")
         } else {
-            builder.append("<input type=\"button\" value=\"${target.message.getNumberOfGood()} いいね\" onclick=\"postGood('${target.message.id}')\"/>")
+            builder.append("<input type=\"button\" value=\"${target.goods.size} いいね\" onclick=\"postGood('${target.messageId}')\"/>")
         }
         builder.append("</form>")
         return builder.toString()
@@ -131,8 +132,8 @@ class MessagePresenter {
 
     private fun createDeleteForm(target: MessageForDisplay): String {
         val builder = StringBuilder()
-        builder.append("<form id=\"delete-${target.message.id}\">")
-        builder.append("<input type=\"button\" value=\"削除\" onclick=\"deleteMessage('${target.message.id}')\"/>")
+        builder.append("<form id=\"delete-${target.messageId}\">")
+        builder.append("<input type=\"button\" value=\"削除\" onclick=\"deleteMessage('${target.messageId}')\"/>")
         builder.append("</form>")
         return builder.toString()
     }
@@ -140,10 +141,10 @@ class MessagePresenter {
     private fun formatReplyForm(target: MessageForDisplay): String {
         val builder = StringBuilder()
         builder.append("<div class=\"reply-form\">")
-        builder.append("<form id=\"reply-${target.message.postNo}\">")
-        builder.append("<input type=\"hidden\" name=\"postNo\" value=\"${target.message.postNo}\">")
+        builder.append("<form id=\"reply-${target.messageId}\">")
+        builder.append("<input type=\"hidden\" name=\"messageId\" value=\"${target.messageId}\">")
         builder.append("<textarea name=\"comment\" maxlength=\"100\" cols=\"40\" rows=\"2\"></textarea><br>")
-        builder.append("<input type=\"button\" value=\"返信\" onclick=\"postReply('reply-${target.message.postNo}')\"/>")
+        builder.append("<input type=\"button\" value=\"返信\" onclick=\"postReply('reply-${target.messageId}')\"/>")
         builder.append("</form>")
         builder.append("</div>")
         return builder.toString()

@@ -20,6 +20,6 @@ mybatis:
   configuration:
     mapUnderscoreToCamelCase: true
 
-# Logbackの設定ファイルの指定
 logging:
-  config: classpath:logback-webboard.xml
+  level:
+    ROOT: INFO
