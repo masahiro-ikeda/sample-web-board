@@ -10,7 +10,7 @@ buildscript {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
         classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
-        classpath("io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE")
+        classpath("io.spring.gradle:dependency-management-plugin:1.1.4")
     }
 }
 
@@ -39,7 +39,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.thymeleaf:thymeleaf:3.0.9.RELEASE'
     implementation 'org.thymeleaf:thymeleaf-spring4:3.0.9.RELEASE'
-    
+
     // DataSource
     implementation 'mysql:mysql-connector-java:5.1.47'
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.0.1'
@@ -51,6 +51,6 @@ dependencies {
 compileKotlin {
     kotlinOptions {
         freeCompilerArgs = ['-Xjsr305=strict']
-        jvmTarget = '1.8'
+        jvmTarget = '11'
     }
 }

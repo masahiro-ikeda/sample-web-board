@@ -5,7 +5,7 @@ spring:
   # DATA SOURCE
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://db:3306/develop
+    url: jdbc:mysql://db:3306/develop?useSSL=false
     username: dev-user
     password: dev-pass
 
